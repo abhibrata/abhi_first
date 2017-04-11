@@ -1,0 +1,161 @@
+'####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----
+'####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----
+
+'																														IP Name					: e-Swift Framework									
+'																														Copyright © 2011 TCSL. All Rights Reserved       
+'																														Framework Owner	: TCS ASU-ERP & Niche Testing COE			   
+'																														Summary : 	e-Swift framework is an intellectual Property of TCSL Which works as	an accelerator for Automation Testing of ERP Solutions.	
+'																														No part of this work may be reproduced, stored in a retrieval system,adapted or transmitted 		in any form or by any means electronic,	mechanical,photographic, 
+'																														optic recording or otherwise without the prior written permission of TCSL. 			       	    
+
+'####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----
+'####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----####-----
+
+
+
+'-----------------------------------------------------------------------------------------------------------------		GLOBAL PARAMETERS		DECLARATION-----------------------------------------------------------------------------------------------------------------
+
+Public gstrMainFrameworkFolder																											' Root Framework path 	
+Public gstrMainResultFolder																													' -----------Root Result path 
+Public InputFilePath                         		 		  																						    '  Variable for Input Excel File  Path 				
+Public gstrScenarioResultFolder 																										  ' ----------Variable for Test Scenatio folder path .Contains value= Main Framework path + Testcase name + Timestamp
+Public resultDetailsMod																																' Variable for conatining result details. (Not used ) 
+Public ImagePath																																		' ----------Variable for containg the screenshots image paths
+Public fso :   Set fso = CreateObject("Scripting.FileSystemObject")       								 ' Global variable to create File system object 
+'Public Flag :   Flag=0																																	' ----------Global variable for cinating the Pass of Fail status of any test step. Allowed Values: PASS= 0 , FAIL = 1
+Public errorCount																																		  ' Variable to hold number of errors happenning during execution
+Public TestCaseIndex																																' ----------Variable for holding the testcase iteration value for summary reporting
+'Public oShape																																				' Variable required during the Openoffice document creartion.
+Public gstrScreenShotDocument																											'----------Variable for  containing the Word screenshot doc name created for a testcase												
+Public blnCreateImageEachStep 																											 '----------Boolean Global variable to ake screenshot at each step by Default . Allowed Values= TRUE /	FALSE
+Public gstrLogoFileName																															'Variable for containing the  image file name havingt the customer logo
+Public gsrtLogoAltText 																																'--------- to contain the Alternate text that should appear in Summary report in case image is not displayed.	
+Public gstrSummaryGraphType																												 'Boolean Global variable for  selecting the Type of Graph in Summary Report . Allowed Values= PIE/ BAR
+Public TDConnection																																' Variable for Quality Center(QC) conenctions
+'Set TDConnection = CreateObject("TDAPIOLE80.TDConnection")												'	------------------ Set if QC connection is exists
+Public strResultDetails: strResultDetails=""																						 ' Variable for holding details of all the testcase executed with iteration nos.
+'Public strExecutionReportFileName									
+Public giTestCaseStartTime: giTestCaseStartTime =Timer()													' -----------Variable for setting timer on first execution					
+Public giLastUpdatedTime:giLastUpdatedTime=giTestCaseStartTime									' At end of each TEST STEP execution this variable would the time details.
+Public giTestCaseEndTime,giTotalTime																							 ' -----------At end of each test case execution this vairable would the time details.
+Public aTestCaseDetailsForSummary(50,4)  																					   ' Global Variables for Storing Test cases executed name,Pass.Fail status,iteration no  & total time taken at runtime for updating the Summary report
+Public giSummaryArrCounter	: giSummaryArrCounter = 0																												   '-------Global Array counter for tracking the array cells of aTestCaseDetailsForSummary variable
+Public 	giTotalTCCount 	:  giTotalTCCount = 0							  														  'Global Variable for Total  Test case count
+Public  giTotalPassCount  :	giTotalPassCount = 0			    															 '------Global Variable for Total  Passed tescase count
+Public  giTotalFailCount  :  giTotalFailCount  =0																					'Global Variable for Toal Failed test case count
+Public gObjectTimeoutLimit :    gObjectTimeoutLimit = 1																'-------Global Timeout variable to limit the maximum time to wait for any object
+Public existingErrorFlag  :   existingErrorFlag=False  																		'Global  Flag to check if  any existing error  is active
+Public gstrBrowserName																															  ' ------- Variable for holding the Browser 'Name'  property value
+Public gstrGeneralTestCase	:gstrGeneralTestCase=""																	' Variable for Checking if a testcase name is other COMMON, OUTPUT,EXECUTIONDETAILS & DEFECT'----Used for mainly creating the Login and Logout Component
+Public gstrDefaultResponsibilityName																								   ' ------- Variable for holding the Default responsibility to be selected after Login
+Public blnCloseBrowserOnLogout																											'Global Variable to set True or False. Browser will be closed when True after loggin out. Allowed Value= TRUE	/FALSE
+Public strErrorFormName: strErrorFormName = ""     																		 ' Assign OracleForm name value to this variable wherver error is returned by error listener
+Public blnSetReporterFlag																														  '--------------Flag  to separate QTP result entry for each function step is required.Set 'True 'or 'False'. Recommended := False 	
+Public blnSetLogFileFlag 																															'Flag  to Set if separate Log File is needed.Set 'True 'or 'False'. Recommended := False 
+Public setDefectFlag 																																	'--------------Flag  to Set if Automatic Defect Logging Required: Set 'True 'or 'False'.
+Public setUploadZippedResultFile																										 ' Set to True of Automatic result upload in QC is required
+Public blnCloseAllForms 																															'----------- By default when this boolean variable is Set to True ,all opened forms will be closed when CloseForm function is called.
+Public blnIgnoreError 	:blnIgnoreError= False																															  ' Boolean variable to ignore error wherevr required.
+Public strDetailedHTMLFileName  																										  ' ----------Variable to store the File name of detailed HTML report.
+Public strDetailedReportHeader 																												' Vairable for holding the Main header title in the Detailed report	
+Public blnCaptureFlag  																																' --------- Global variable to capture screenshot wherever requried. Allowed Value= TRUE	(only )
+Public blnDefault_eSwiftReporting :blnDefault_eSwiftReporting= True
+Public blnShowNotification
+Public blnCreateTrainingDoc
+Public blnCreatePDFTrainingDoc 
+Public giStepCounterForTrainingDoc    									' the counter for step marking in training doc
+Public gstrScreenShotDocumentPDF
+Public gblnCreateSingleExecutionReport
+Public gstrTrainingDocFileName
+Const wdFormatPDF = 17
+Public gstrRuntimeScenarioDataFilePath 
+
+Public aImagePathArray(100)
+Public iImageCounterForHTML: iImageCounterForHTML=0
+Public iCurrentImageCounterForHTML: iCurrentImageCounterForHTML=0
+Public stepNumber																															' stepNumber for containg the Manual testcase step no.
+Public blnSkipSteps: blnSkipSteps= False																												' Boolean variable to skip steps when unexpected error is found
+Public gstrTestCaseName,gstrTCDescription,gstrTCPrerequisite
+Public blnMainFailFlag : blnMainFailFlag = False
+Public gstrFailedFunctionList : gstrFailedFunctionList = ""
+Public blnTrueIfFullStringMatch: blnTrueIfFullStringMatch=true
+Public blnJavaError : blnJavaError = False
+Public blnCloseOpenIEBrowsersOnStart
+Public blnRecoveredFromError: blnRecoveredFromError = False
+Public blnLoginFailure : blnLoginFailure =False
+Public strLastActualResult:strLastActualResult=""
+Public aFileAttachmentPathArray(10)
+Public giCurrentFileAttachmentCounterForHTML: giCurrentFileAttachmentCounterForHTML=0
+Public giFileAttachmentCounterForHTML:giFileAttachmentCounterForHTML=0
+Public blnIgnoreValidation  
+Public giFailedStepNumber  
+Public giHTMLRowNumber : giHTMLRowNumber = 1
+Public gblnIgnoreApplicationError :gblnIgnoreApplicationError= False
+Public gblnContinueExecutionIFFailed  'Set this variable to TRUE in script incase execution is to be continued after the failed step
+Public blnCreateResultOnDesktop
+Public gstrMasterResultDrive
+Public gstrMasterResultFolderName
+Public strMainApplicationURL
+Public gstrOracleUserName
+Public gstrOraclePassWord
+Public gstrRunTimeDataSheetFolderName
+Public blnObjectError
+Public blnExceptionFlag
+Set objShell = CreateObject("WScript.Shell")
+Public gstrIconPathForNotification : gstrIconPathForNotification= objShell.Environment("USER").Item("Oracle e-Swift_path") & "\e-swift1.ico"        ' Provide icon path for notification 'C:\Oracle_e-Swift
+Public BalloonTooltip:Set BalloonTooltip=New BalloonTooltipClass
+'blnCloseBrowserOnLogout = True									
+'blnCloseAllForms =False	                                                 ' 
+
+
+Environment.Value("strScenarioResultFileName") = ""																		'------------Global Environment Variable to Store Result Folder Name
+Environment.Value("blnFatalError") = False  																						' Global Environment Variable to retain the Error state information across Components
+Environment.Value("strFatalMessage") = ""																							'------------Global Environment Variable to retain the Error Message across Components, if any
+Environment.Value("blnResultFileExists") = False																			'Global Environment Variable to Control creation of single Result HTML File
+
+'gstrLogoFileName = "Company.jpg"																												'------------ Provide the Company Logo file name. Should be placed under Result/Images 
+'gsrtLogoAltText ="CompanyName"																																'------------ Provide alternate text in case logo is not properly displayed in html page
+gstrSummaryTitle="Execution Summary Report"					  					  '------------ Provide the name of the HTLM Summary file 
+gstrTestingType= "Regression Automation"				 															'------------ Provide the type of  automation testing being done.e.g. Regression,SIT etc
+gstrDetailedReportHeader = "Automation Execution Report"                
+gstrDetailedHTMLFileName  = "e-Swift Detailed Report.html"																 '------------Provide the name of detailed HTML report file name
+gstrSummaryGraphType = "PIE" 																													 '-------------Provide "BAR" or PIE as the Gragh Type in the Summary report
+gstrTrainingDocFileName = "Testcase document _"																				 ' --------------Specify the name of the Training doc to be appended with Test case name
+gstrExecutionSheetName= "COMMON"																										' Variable to hold the name of the sheet where execution details would be updated. (VALUENOT TO BE CHANGED HERE)
+ blnDefault_eSwiftReporting = True																												' Assign default to true for normal reporting structure
+
+'-----------------------------------------------------------------   Mandatory Section    -----------------------------------------------------------------------------
+blnCreateResultOnDesktop = False								'Set to True if result files/foldera re to be created on desktop 
+blnCreateTrainingDoc = False											' Set to True if  separet Training document is to be created 
+blnCreatePDFTrainingDoc = False                                 'Set to True if PDF version of Training document is to be generated. Word version will be converted to PDF
+gblnContinueExecutionIFFailed =False                       ' Set to True if Script execution is to continue in the event of any  failures midway during execution
+blnIgnoreValidation = False												'Set to True if Any particular function is to ignore any Error /exception validation is to skip. Set this variable to True before calling that function
+blnCloseOpenIEBrowsersOnStart=True                       'Set to True if All browsers are to be closed before script execution
+blnShowNotification = True                                                 'Set to True if  e-Swift execution notification is to be displayed on taskbar
+blnCreateImageEachStep  = False								'   Set True or False. True:= Screenshot will be captured for each step executed
+blnSetReporterFlag = True    											' Set to True if reporter.reportevent is to be used
+blnSetLogFileFlag=False													  ' Set to True if Logfile is to be generated
+setDefectFlag=False  														 '  Set to True if Defect is to be logged in QC
+setUploadZippedResultFile = True                               '  Set to True if Result (zipped) is to be uploaded in QC
+gblnCreateSingleExecutionReport =True   		'  Set to True if Single Detailed report for all executed test cases are to be generated instead of individual reports
+gblnCreateExecutionSummaryReport = TRUE           	'  Set to True if Summary Execution report for all executed test cases are to be generated
+gstrRuntimeScenarioDataFilePath=""                            '  Provide Path to create Runtime Excel file to hold dynamic application data. Assigning Blank value would create file in result folder selected above
+gstrDefaultResponsibilityName = ""  							 ' Assign Default Oracle responsibility 
+
+
+gstrMasterResultDrive = objShell.Environment("USER").Item("Oracle e-Swift_path")    ' Assign value for e-Swift Framwork folder path
+gstrMasterResultFolderName  = "e-Swift Automation Testing Results"           ' Assign Name for Result Folder  which will hold the execution resutls
+strMainApplicationURL=""   												' Assign URL to this Variable to override all URL values from Datatable
+gstrOracleUserName=""  													' Assign UserName  to this Variable to override all UserName  values from Datatable
+gstrOraclePassWord=""													' Assign Password   to this Variable to override all Password  values from Datatable
+gstrRunTimeDataSheetFolderName = "Business Scenario RunTime Data Folder"   ' Assign folder name for Runtime data file folder
+gstrBrowserName = "Login"       									' Deafult browser name for Oracle during login
+Set objShell = Nothing    'unsets the object
+'-----------------------------------------------------------------   End of  Mandatory Section -----------------------------------------------------------------   
+
+
+'Test Scenario Global Parameters
+Public iterator
+iterator=2
+																									
+

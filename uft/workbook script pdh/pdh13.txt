@@ -1,0 +1,861 @@
+bom lookups::
+-----------------------------------------
+
+Call StartExecution(InputFilePath,"BOMLookups",2)
+Call SwitchResponsibility(BOMLookups_ResponsibilityName)
+Call SelectFromNavigator("Setup:Define Lookups")
+BOMLookups_LookupNum = 2
+Call GetInputFromExcel(InputFilePath,"BOMLookups",BOMLookups_LookupNum)
+Do
+	If Ucase(BOMLookups_Operation) = "ADD" Then
+		Call SelectMenu("Manufacturing Lookups","File->New")
+		Call EnterTextForm("Manufacturing Lookups","Type",0,BOMLookups_LookupType)
+		Call EnterTextForm("Manufacturing Lookups","Lookup Type Meaning",0,BOMLookups_Meaning)	
+		BOMLookups_TableRowNum = 1
+		Do
+			Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,BOMLookups_TableRowNum,"Code")
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",BOMLookups_TableRowNum,"Code",BOMLookups_LookupCode)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",BOMLookups_TableRowNum,"Meaning",BOMLookups_LookupMeaning)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",BOMLookups_TableRowNum,"Description",BOMLookups_LookupDescription)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",BOMLookups_TableRowNum,"Tag",BOMLookups_Tag)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",BOMLookups_TableRowNum,"From",BOMLookups_From)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",BOMLookups_TableRowNum,"To",BOMLookups_To)
+			
+			If Ucase(BOMLookups_Enabled) = "CHECKED" Then
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",BOMLookups_TableRowNum,"Enabled","True")
+			ElseIf Ucase(BOMLookups_Enabled)= "UNCHECKED" or Ucase(BOMLookups_Enabled)= "NOT CHECKED" Then
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",BOMLookups_TableRowNum,"Enabled","False")
+			End If
+			
+			Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,BOMLookups_TableRowNum,"[  ]")
+			Call EnterTextFlexField("Common Lookups","Context Value",0,BOMLookups_ContextValue)
+			wait 3
+			Set textFieldObj= Description.Create()
+			textFieldObj("micclass").value="OracleTextField"
+			Set childObj=OracleFlexWindow("title:=Common Lookups").ChildObjects(textFieldObj)
+			BOMLookups_textBoxNum = childObj.count
+			Set textFieldObj = nothing
+			Set childObj = nothing
+			If BOMLookups_textBoxNum > 2 Then
+				For BOMLookups_AttributeNum = 2 To BOMLookups_textBoxNum
+					If OracleFlexWindow("title:=Common Lookups").OracleTextField("index:="& BOMLookups_AttributeNum-1).Exist(5) Then
+						Call EnterTextFlexField("Common Lookups",".*",BOMLookups_AttributeNum-1,Eval("BOMLookups_ATTR"&BOMLookups_AttributeNum-1))
+					End If
+				Next
+			End If
+			Call ClickFlexButton("Common Lookups","OK")
+			Call SelectMenu("Manufacturing Lookups","File->Save")
+			BOMLookups_TableRowNum= BOMLookups_TableRowNum + 1
+			BOMLookups_LookupNum = BOMLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"BOMLookups",BOMLookups_LookupNum)
+			If BOMLookups_LookupCode <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+			
+		Loop until BOMLookups_LookupType <> ""
+		
+	ElseIf Ucase(BOMLookups_Operation) = "CHANGE" Then
+		Call SelectMenu("Manufacturing Lookups","View->Query By Example->Enter")
+		Call EnterTextForm("Manufacturing Lookups","Type",0,BOMLookups_LookupType)
+		Call SelectMenu("Manufacturing Lookups","View->Query By Example->Run")
+		Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+		Do
+			Set objTableObject = OracleFormWindow("short title:=Manufacturing Lookups").OracleTable("block name:=FND_LOOKUP_VALUES","index:=0")
+			tableRowNumber = GetRowNumOfSpecificValueInTableColumn(objTableObject,"Code",BOMLookups_LookupCode)
+			Set objTableObject = nothing
+			Environment.Value("blnFatalError")=False
+			If OracleNotification("title:=Forms").Exist(5) Then
+				Call ClickNotificationButton("Forms","OK")
+			End If 
+			If IsNumeric(tableRowNumber) Then
+				Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,tableRowNumber,"Code")
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Meaning",BOMLookups_LookupMeaning)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Description",BOMLookups_LookupDescription)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Tag",BOMLookups_Tag)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"From",BOMLookups_From)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"To",BOMLookups_To)
+				
+				If Ucase(BOMLookups_Enabled) = "CHECKED" Then
+					Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Enabled","True")
+				ElseIf Ucase(BOMLookups_Enabled)= "UNCHECKED" or Ucase(BOMLookups_Enabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Enabled","False")
+				End If
+				
+				Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,tableRowNumber,"[  ]")
+			Else 
+				Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+				Call SelectMenu("Manufacturing Lookups","File->New")
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Code",BOMLookups_LookupCode)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Meaning",BOMLookups_LookupMeaning)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Description",BOMLookups_LookupDescription)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Tag",BOMLookups_Tag)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"From",BOMLookups_From)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"To",BOMLookups_To)
+				
+				If Ucase(BOMLookups_Enabled) = "CHECKED" Then
+					Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Enabled","True")
+				ElseIf Ucase(BOMLookups_Enabled)= "UNCHECKED" or Ucase(BOMLookups_Enabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Enabled","False")
+				End If
+				
+				Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,2,"[  ]")
+			End If
+			Call EnterTextFlexField("Common Lookups","Context Value",0,BOMLookups_ContextValue)
+			wait 3
+			Set textFieldObj= Description.Create()
+			textFieldObj("micclass").value="OracleTextField"
+			Set childObj=OracleFlexWindow("title:=Common Lookups").ChildObjects(textFieldObj)
+			BOMLookups_textBoxNum = childObj.count
+			Set textFieldObj = nothing
+			Set childObj = nothing
+			If BOMLookups_textBoxNum > 2 Then
+				For BOMLookups_AttributeNum = 2 To BOMLookups_textBoxNum
+					If OracleFlexWindow("title:=Common Lookups").OracleTextField("index:="& BOMLookups_AttributeNum-1).Exist(5) Then
+						Call EnterTextFlexField("Common Lookups",".*",BOMLookups_AttributeNum-1,Eval("BOMLookups_ATTR"&BOMLookups_AttributeNum-1))
+					End If
+				Next
+			End If
+			Call ClickFlexButton("Common Lookups","OK")
+			Call SelectMenu("Manufacturing Lookups","File->Save")
+			BOMLookups_LookupNum = BOMLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"BOMLookups",BOMLookups_LookupNum)
+			If BOMLookups_LookupCode <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+		Loop until BOMLookups_LookupType <> ""
+		
+	ElseIf Ucase(BOMLookups_Operation) = "DELETE" Then
+		Call SelectMenu("Manufacturing Lookups","View->Query By Example->Enter")
+		Call EnterTextForm("Manufacturing Lookups","Type",0,BOMLookups_LookupType)
+		Call SelectMenu("Manufacturing Lookups","View->Query By Example->Run")
+		Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+		Do
+			Call SetFocusTableForSpecificValue("Manufacturing Lookups","FND_LOOKUP_VALUES","Code",BOMLookups_LookupCode)
+			Call SelectMenu("Manufacturing Lookups","Edit->Clear->Record")
+			Call SelectMenu("Manufacturing Lookups","File->Save")
+			BOMLookups_LookupNum = BOMLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"BOMLookups",BOMLookups_LookupNum)
+		Loop until INVLookups_LookupType <> ""
+		
+	End If
+	Call SetFocusForm("Manufacturing Lookups","FND_LOOKUP_TYPES_MEANING_0")
+	Call SelectMenu("Manufacturing Lookups","File->Save")
+Loop While BOMLookups_Phase <> ""
+
+Call CloseForm("Manufacturing Lookups")
+Call FinalStatus()
+
+---------------------------------------------------
+
+create dff::
+
+
+Call StartExecution(InputFilePath, "PDHDFF",2)
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+wait 10
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",PDHDFF_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Setup",0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Flexfields",0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Descriptive",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Segments",1)
+If JavaWindow("tagname:=PluginEmbeddedFrame","developer name:=frame0").JavaDialog("label:=Security Warning").Exist(30) Then
+	JavaWindow("tagname:=PluginEmbeddedFrame","developer name:=frame0").JavaDialog("label:=Security Warning").JavaCheckBox("label:=I accept the risk and.*").Set "ON"
+	wait 5
+	JavaWindow("tagname:=PluginEmbeddedFrame","developer name:=frame0").JavaDialog("label:=Security Warning").JavaButton("label:=Run","index:=0").Click
+End If
+Call waitUntilFormExist("Descriptive Flexfield Segments")
+Call CloseForm("Descriptive Flexfield Segments")
+
+
+'Call ValidateTextFieldValue("Descriptive Flexfield Segments","Prompt","Context Value")
+'Call ValidateTextFieldValue("Descriptive Flexfield Segments","Value Set","")
+'Call ValidateTextFieldValue("Descriptive Flexfield Segments","Default Value","")
+'Call ValidateTextFieldValue("Descriptive Flexfield Segments","Reference Field","")
+'
+'Call SelectCheckBox("Descriptive Flexfield Segments","Required","True")
+'Call SelectCheckBox("Descriptive Flexfield Segments","Displayed","True")
+'Call SelectCheckBox("Descriptive Flexfield Segments","Synchronize with Reference Field","True")
+
+PDHDFF_DFFNum = 2
+Call GetInputFromExcel(InputFilePath,"PDHDFF",PDHDFF_DFFNum)
+Do
+
+	If Ucase(PDHDFF_Operation) = "ADD" Then	
+		Call SelectFromNavigator("Setup:Flexfields:Descriptive:Segments")
+		Call SelectMenu("Descriptive Flexfield Segments","View->Query By Example->Enter")
+		Call EnterTextForm("Descriptive Flexfield Segments", "Application",0,PDHDFF_Application)
+		Call EnterTextForm("Descriptive Flexfield Segments", "Title",0,PDHDFF_Title)
+		Call SelectMenu("Descriptive Flexfield Segments","View->Query By Example->Run")
+		Call SelectCheckBox("Descriptive Flexfield Segments","Freeze Flexfield Definition","False")
+		If OracleNotification("title:=Caution").Exist(5) Then
+			Call ClickNotificationButton("Caution","OK")
+		End If
+		Call SetFocusTable("Descriptive Flexfield Segments","CONTEXT",0,1,"Code")
+		Call SelectMenu("Descriptive Flexfield Segments","File->New")
+		Call EnterTextTable("Descriptive Flexfield Segments","CONTEXT",2,"Code",PDHDFF_Code)
+		'Call EnterTextTable("Descriptive Flexfield Segments","CONTEXT",2,"Name",PDHDFF_Name)
+		Call EnterTextTable("Descriptive Flexfield Segments","CONTEXT",2,"Description",PDHDFF_Description)
+		If Ucase(PDHDFF_Enabled) = "CHECKED" Then
+			Call EnterTextTable("Descriptive Flexfield Segments","CONTEXT",2,"Enabled","True")
+		ElseIf Ucase(PDHDFF_Enabled)= "UNCHECKED" or Ucase(PDHDFF_Enabled)= "NOT CHECKED" Then
+			Call EnterTextTable("Descriptive Flexfield Segments","CONTEXT",2,"Enabled","False")
+		ElseIf cstr(PDHDFF_Enabled)= "" Then
+		
+		End If
+		
+		Call SelectMenu("Descriptive Flexfield Segments","File->Save")
+		Call ClickButton("Descriptive Flexfield Segments","Segments")
+		PDHDFF_TableRowNum = 1
+		Do
+			Call SetFocusTable("Segments Summary","SEG",0,PDHDFF_TableRowNum,"Number")
+			If  OracleNotification("title:=Caution").Exist(5) then
+				Call ClickNotificationButton("Caution","OK")
+			End if
+			Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Number",PDHDFF_SummaryNumber)
+			Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Name",PDHDFF_SummaryName)
+			Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Window Prompt",PDHDFF_WindowPrompt)
+			Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Column",PDHDFF_Column)
+			Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Value Set",PDHDFF_SummaryValueSet)
+			
+			If Ucase(PDHDFF_SummaryDisplayed) = "CHECKED" Then
+				Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Displayed","True")
+			ElseIf Ucase(PDHDFF_SummaryDisplayed)= "UNCHECKED" or Ucase(PDHDFF_SummaryDisplayed)= "NOT CHECKED" Then
+				Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Displayed","False")
+			End If
+			
+			If Ucase(PDHDFF_SummaryEnabled) = "CHECKED" Then
+				Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Enabled","True")
+			ElseIf Ucase(PDHDFF_SummaryEnabled)= "UNCHECKED" or Ucase(PDHDFF_SummaryEnabled)= "NOT CHECKED" Then
+				Call EnterTextTable("Segments Summary","SEG",PDHDFF_TableRowNum,"Enabled","False")
+			End If
+			Call ClickButton("Segments Summary","Open")
+			If Ucase(PDHDFF_SummaryRequired) = "CHECKED" Then
+				Call SelectCheckBox("Segments","Required","True")
+			ElseIf Ucase(PDHDFF_SummaryRequired)= "UNCHECKED" or Ucase(PDHDFF_SummaryRequired)= "NOT CHECKED" Then
+				Call SelectCheckBox("Segments","Required","False")
+			End If
+			Call SelectMenu("Segments","File->Save")
+			If OracleNotification("title:=Caution").Exist(5) Then
+				Call ClickNotificationButton("Caution","OK")
+			End If
+			Call CloseForm("Segments")
+			PDHDFF_DFFNum = PDHDFF_DFFNum + 1
+			PDHDFF_TableRowNum = PDHDFF_TableRowNum + 1
+			Call GetInputFromExcel(InputFilePath,"PDHDFF",PDHDFF_DFFNum)
+			If PDHDFF_SummaryNumber <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+		Loop until PDHDFF_Application <> ""
+		Call SelectMenu("Segments Summary","File->Save")
+		If  OracleNotification("title:=Caution").Exist(5) then
+			Call ClickNotificationButton("Caution","OK")
+		End if
+		Call CloseForm("Segments Summary")
+		Call SelectCheckBox("Descriptive Flexfield Segments","Freeze Flexfield Definition","True")
+		If OracleNotification("title:=Caution").Exist(5) Then
+			Call ClickNotificationButton("Caution","OK")
+		End If
+		Call ClickButton("Descriptive Flexfield Segments","Compile")
+		If OracleNotification("title:=Note").Exist(5) Then
+			Call ClickNotificationButton("Note","OK")
+		End If
+		If OracleNotification("title:=Note").Exist(5) Then
+			Call ClickNotificationButton("Note","OK")
+		End If
+		Call CloseForm("Descriptive Flexfield Segments")
+	ElseIf Ucase(PDHDFF_Operation) = "CHANGE" Then
+		Call SelectFromNavigator("Setup:Flexfields:Descriptive:Segments")
+		Call SelectMenu("Descriptive Flexfield Segments","View->Query By Example->Enter")
+		Call EnterTextForm("Descriptive Flexfield Segments", "Application",0,PDHDFF_Application)
+		Call EnterTextForm("Descriptive Flexfield Segments", "Title",0,PDHDFF_Title)
+		Call SelectMenu("Descriptive Flexfield Segments","View->Query By Example->Run")
+		Call SelectCheckBox("Descriptive Flexfield Segments","Freeze Flexfield Definition","False")
+		If OracleNotification("title:=Caution").Exist(5) Then
+			Call ClickNotificationButton("Caution","OK")
+		End If
+		Call SetFocusTable("Descriptive Flexfield Segments","CONTEXT",0,1,"Code")
+		'Set objTableObject = OracleFormWindow("short title:=Descriptive Flexfield Segments").OracleTable("block name:=CONTEXT","index:=0")
+		Call SelectMenu("Descriptive Flexfield Segments","View->Query By Example->Enter")
+		Call EnterTextTable("Descriptive Flexfield Segments","CONTEXT",1,"Code",PDHDFF_Code)
+		Call SelectMenu("Descriptive Flexfield Segments","View->Query By Example->Run")
+		Call ClickButton("Descriptive Flexfield Segments","Segments")
+		Do
+			Set objTableObject = OracleFormWindow("short title:=Segments Summary").OracleTable("block name:=SEG","index:=0")
+			tableRowNumber = GetRowNumOfSpecificValueInTableColumn(objTableObject,"Number",PDHDFF_SummaryNumber)
+			Set objTableObject = nothing
+			Environment.Value("blnFatalError")=False
+			If OracleNotification("title:=Forms").Exist(5) Then
+				Call ClickNotificationButton("Forms","OK")
+			End If 
+			If IsNumeric(tableRowNumber) Then
+				Call SetFocusTable("Segments Summary","SEG",0,tableRowNumber,"Number")
+				If  OracleNotification("title:=Caution").Exist(5) then
+					Call ClickNotificationButton("Caution","OK")
+				End if
+				Call EnterTextTable("Segments Summary","SEG",tableRowNumber,"Name",PDHDFF_SummaryName)
+				Call EnterTextTable("Segments Summary","SEG",tableRowNumber,"Window Prompt",PDHDFF_WindowPrompt)
+				If PDHDFF_SummaryValueSet <> "" Then
+					Call EnterTextTable("Segments Summary","SEG",tableRowNumber,"Value Set",PDHDFF_SummaryValueSet)
+				Else
+					Call EnterTextTable("Segments Summary","SEG",tableRowNumber,"Value Set","")
+				End If
+				
+				If Ucase(PDHDFF_SummaryDisplayed) = "CHECKED" Then
+					Call EnterTextTable("Segments Summary","SEG",tableRowNumber,"Displayed","True")
+				ElseIf Ucase(PDHDFF_SummaryDisplayed)= "UNCHECKED" or Ucase(PDHDFF_SummaryDisplayed)= "NOT CHECKED" Then
+					Call EnterTextTable("Segments Summary","SEG",tableRowNumber,"Displayed","False")
+				End If
+				
+				If Ucase(PDHDFF_SummaryEnabled) = "CHECKED" Then
+					Call EnterTextTable("Segments Summary","SEG",tableRowNumber,"Enabled","True")
+				ElseIf Ucase(PDHDFF_SummaryEnabled)= "UNCHECKED" or Ucase(PDHDFF_SummaryEnabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Segments Summary","SEG",tableRowNumber,"Enabled","False")
+				End If
+				
+			Else 
+				
+				Set objTableObject = OracleFormWindow("short title:=Segments Summary").OracleTable("block name:=SEG","index:=0")
+				rowNum= GetRowNumberByColumnName(objTableObject,"Number","")
+				Set objTableObject = nothing
+				Call SetFocusTable("Segments Summary","SEG",0,rowNum,"Number")
+				If  OracleNotification("title:=Caution").Exist(5) then
+					Call ClickNotificationButton("Caution","OK")
+				End if
+				Call EnterTextTable("Segments Summary","SEG",rowNum,"Number",PDHDFF_SummaryNumber)
+				Call EnterTextTable("Segments Summary","SEG",rowNum,"Name",PDHDFF_SummaryName)
+				Call EnterTextTable("Segments Summary","SEG",rowNum,"Window Prompt",PDHDFF_WindowPrompt)
+				Call EnterTextTable("Segments Summary","SEG",rowNum,"Column",PDHDFF_Column)
+				Call EnterTextTable("Segments Summary","SEG",rowNum,"Value Set",PDHDFF_SummaryValueSet)
+				
+				If Ucase(PDHDFF_SummaryDisplayed) = "CHECKED" Then
+					Call EnterTextTable("Segments Summary","SEG",rowNum,"Displayed","True")
+				ElseIf Ucase(PDHDFF_SummaryDisplayed)= "UNCHECKED" or Ucase(PDHDFF_SummaryDisplayed)= "NOT CHECKED" Then
+					Call EnterTextTable("Segments Summary","SEG",rowNum,"Displayed","False")
+				End If
+				
+				If Ucase(PDHDFF_SummaryEnabled) = "CHECKED" Then
+					Call EnterTextTable("Segments Summary","SEG",rowNum,"Enabled","True")
+				ElseIf Ucase(PDHDFF_SummaryEnabled)= "UNCHECKED" or Ucase(PDHDFF_SummaryEnabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Segments Summary","SEG",rowNum,"Enabled","False")
+				End If
+			End If
+			Call ClickButton("Segments Summary","Open")
+			If Ucase(PDHDFF_SummaryRequired) = "CHECKED" Then
+				Call SelectCheckBox("Segments","Required","True")
+			ElseIf Ucase(PDHDFF_SummaryRequired)= "UNCHECKED" or Ucase(PDHDFF_SummaryRequired)= "NOT CHECKED" Then
+				Call SelectCheckBox("Segments","Required","False")
+			End If
+			Call SelectMenu("Segments","File->Save")
+			If OracleNotification("title:=Caution").Exist(5) Then
+				Call ClickNotificationButton("Caution","OK")
+			End If
+			Call CloseForm("Segments")
+			PDHDFF_DFFNum = PDHDFF_DFFNum + 1
+			Call GetInputFromExcel(InputFilePath,"PDHDFF",PDHDFF_DFFNum)
+			If PDHDFF_SummaryNumber <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+		Loop until PDHDFF_Application <> ""
+		Call SelectMenu("Segments Summary","File->Save")
+		If  OracleNotification("title:=Caution").Exist(5) then
+			Call ClickNotificationButton("Caution","OK")
+		End if
+		Call CloseForm("Segments Summary")
+		Call SelectCheckBox("Descriptive Flexfield Segments","Freeze Flexfield Definition","True")
+		If OracleNotification("title:=Caution").Exist(5) Then
+			Call ClickNotificationButton("Caution","OK")
+		End If
+		Call ClickButton("Descriptive Flexfield Segments","Compile")
+		If OracleNotification("title:=Note").Exist(5) Then
+			Call ClickNotificationButton("Note","OK")
+		End If
+		If OracleNotification("title:=Note").Exist(5) Then
+			Call ClickNotificationButton("Note","OK")
+		End If
+		Call CloseForm("Descriptive Flexfield Segments")
+	End If
+Loop while PDHDFF_Phase <> ""
+Call FinalStatus()
+
+----------------------------------------------
+
+inv lookups::
+
+
+
+Call StartExecution(InputFilePath,"INVLookups",2)
+Call SwitchResponsibility(INVLookups_ResponsibilityName)
+Call SelectFromNavigator("Setup:Lookups")
+INVLookups_LookupNum = 2
+Call GetInputFromExcel(InputFilePath,"INVLookups",INVLookups_LookupNum)
+Do
+	If Ucase(INVLookups_Operation) = "ADD" Then
+		Call SelectMenu("Manufacturing Lookups","File->New")
+		Call EnterTextForm("Manufacturing Lookups","Type",0,INVLookups_LookupType)
+		Call EnterTextForm("Manufacturing Lookups","Lookup Type Meaning",0,INVLookups_Meaning)	
+		INVLookups_TableRowNum = 1
+		Do
+			Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,INVLookups_TableRowNum,"Code")
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",INVLookups_TableRowNum,"Code",INVLookups_LookupCode)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",INVLookups_TableRowNum,"Meaning",INVLookups_LookupMeaning)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",INVLookups_TableRowNum,"Description",INVLookups_LookupDescription)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",INVLookups_TableRowNum,"Tag",INVLookups_Tag)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",INVLookups_TableRowNum,"From",INVLookups_From)
+			Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",INVLookups_TableRowNum,"To",INVLookups_To)
+			
+			If Ucase(INVLookups_Enabled) = "CHECKED" Then
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",INVLookups_TableRowNum,"Enabled","True")
+			ElseIf Ucase(INVLookups_Enabled)= "UNCHECKED" or Ucase(INVLookups_Enabled)= "NOT CHECKED" Then
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",INVLookups_TableRowNum,"Enabled","False")
+			End If
+			
+			Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,INVLookups_TableRowNum,"[  ]")
+			Call EnterTextFlexField("Common Lookups","Context Value",0,INVLookups_ContextValue)
+			wait 3
+			Set textFieldObj= Description.Create()
+			textFieldObj("micclass").value="OracleTextField"
+			Set childObj=OracleFlexWindow("title:=Common Lookups").ChildObjects(textFieldObj)
+			INVLookups_textBoxNum = childObj.count
+			Set textFieldObj = nothing
+			Set childObj = nothing
+			If INVLookups_textBoxNum > 2 Then
+				For INVLookups_AttributeNum = 2 To INVLookups_textBoxNum
+					If OracleFlexWindow("title:=Common Lookups").OracleTextField("index:="& INVLookups_AttributeNum-1).Exist(5) Then
+						Call EnterTextFlexField("Common Lookups",".*",INVLookups_AttributeNum-1,Eval("INVLookups_ATTR"&INVLookups_AttributeNum-1))
+					End If
+				Next
+			End If
+			Call ClickFlexButton("Common Lookups","OK")
+			Call SelectMenu("Manufacturing Lookups","File->Save")
+			INVLookups_TableRowNum= INVLookups_TableRowNum + 1
+			INVLookups_LookupNum = INVLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"INVLookups",INVLookups_LookupNum)
+			If INVLookups_LookupCode <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+		Loop until INVLookups_LookupType <> ""
+		Call SetFocusForm("Manufacturing Lookups","FND_LOOKUP_TYPES_MEANING_0")
+		Call SelectMenu("Manufacturing Lookups","File->Save")
+	ElseIf Ucase(INVLookups_Operation) = "CHANGE" Then
+		Call SelectMenu("Manufacturing Lookups","View->Query By Example->Enter")
+		Call EnterTextForm("Manufacturing Lookups","Type",0,INVLookups_LookupType)
+		Call SelectMenu("Manufacturing Lookups","View->Query By Example->Run")
+		Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+		Do
+			Set objTableObject = OracleFormWindow("short title:=Manufacturing Lookups").OracleTable("block name:=FND_LOOKUP_VALUES","index:=0")
+			tableRowNumber = GetRowNumOfSpecificValueInTableColumn(objTableObject,"Code",INVLookups_LookupCode)
+			Set objTableObject = nothing
+			Environment.Value("blnFatalError")=False
+			If OracleNotification("title:=Forms").Exist(5) Then
+				Call ClickNotificationButton("Forms","OK")
+			End If 
+			If IsNumeric(tableRowNumber) Then
+				Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,tableRowNumber,"Code")
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Meaning",INVLookups_LookupMeaning)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Description",INVLookups_LookupDescription)
+'				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Tag",INVLookups_Tag)
+'				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"From",INVLookups_From)
+'				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"To",INVLookups_To)
+				
+				If Ucase(INVLookups_Enabled) = "CHECKED" Then
+					Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Enabled","True")
+				ElseIf Ucase(INVLookups_Enabled)= "UNCHECKED" or Ucase(INVLookups_Enabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Enabled","False")
+				End If
+				
+				Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,tableRowNumber,"[  ]")
+			Else 
+				Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+				Call SelectMenu("Manufacturing Lookups","File->New")
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Code",INVLookups_LookupCode)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Meaning",INVLookups_LookupMeaning)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Description",INVLookups_LookupDescription)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Tag",INVLookups_Tag)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"From",INVLookups_From)
+				Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"To",INVLookups_To)
+				
+				If Ucase(INVLookups_Enabled) = "CHECKED" Then
+					Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Enabled","True")
+				ElseIf Ucase(INVLookups_Enabled)= "UNCHECKED" or Ucase(INVLookups_Enabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Manufacturing Lookups","FND_LOOKUP_VALUES",2,"Enabled","False")
+				End If
+				
+				Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,2,"[  ]")
+			End If
+			Call EnterTextFlexField("Common Lookups","Context Value",0,INVLookups_ContextValue)
+			wait 3
+			Set textFieldObj= Description.Create()
+			textFieldObj("micclass").value="OracleTextField"
+			Set childObj=OracleFlexWindow("title:=Common Lookups").ChildObjects(textFieldObj)
+			INVLookups_textBoxNum = childObj.count
+			Set textFieldObj = nothing
+			Set childObj = nothing
+			If INVLookups_textBoxNum > 2 Then
+				For INVLookups_AttributeNum = 2 To INVLookups_textBoxNum
+					If OracleFlexWindow("title:=Common Lookups").OracleTextField("index:="& INVLookups_AttributeNum-1).Exist(5) Then
+						Call EnterTextFlexField("Common Lookups",".*",INVLookups_AttributeNum-1,Eval("INVLookups_ATTR"&INVLookups_AttributeNum-1))
+					End If
+				Next
+			End If
+			Call ClickFlexButton("Common Lookups","OK")
+			Call SelectMenu("Manufacturing Lookups","File->Save")
+			INVLookups_LookupNum = INVLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"INVLookups",INVLookups_LookupNum)
+			If INVLookups_LookupCode <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+		Loop until INVLookups_LookupType <> ""
+
+	ElseIf Ucase(INVLookups_Operation) = "DELETE" Then
+		Call SelectMenu("Manufacturing Lookups","View->Query By Example->Enter")
+		Call EnterTextForm("Manufacturing Lookups","Type",0,INVLookups_LookupType)
+		Call SelectMenu("Manufacturing Lookups","View->Query By Example->Run")
+		Call SetFocusTable("Manufacturing Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+		Do
+			Call SetFocusTableForSpecificValue("Manufacturing Lookups","FND_LOOKUP_VALUES","Code",INVLookups_LookupCode)
+			Call SelectMenu("Manufacturing Lookups","Edit->Clear->Record")
+			Call SelectMenu("Manufacturing Lookups","File->Save")
+			INVLookups_LookupNum = INVLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"INVLookups",INVLookups_LookupNum)
+		Loop until INVLookups_LookupType <> ""
+
+	End If
+	Call SetFocusForm("Manufacturing Lookups","FND_LOOKUP_TYPES_MEANING_0")
+	Call SelectMenu("Manufacturing Lookups","File->Save")
+Loop While INVLookups_Phase <> ""
+
+Call CloseForm("Manufacturing Lookups")
+Call FinalStatus()
+
+---------------------------------------
+
+lookup::
+
+Call StartExecution(InputFilePath, "PDHLookup",2)
+Call SelectFromNavigator("Setup:Lookups")
+PDHLookup_LookupNum = 2
+Call GetInputFromExcel(InputFilePath,"PDHLookup",PDHLookup_LookupNum)
+Do
+	If Ucase(PDHLookup_Operation)= "ADD" Then
+		Call SelectMenu("Application Object Library Lookups","File->New")
+		Call EnterTextForm("Application Object Library Lookups","Type",0,PDHLookup_LookupType)
+		Call EnterTextForm("Application Object Library Lookups","Lookup Type Meaning",0,PDHLookup_Meaning)
+		Call EnterTextForm("Application Object Library Lookups","Application",0,PDHLookup_Application)
+		PDHLookup_TableRowNum = 1
+		Do
+			Call SetFocusTable("Application Object Library Lookups","FND_LOOKUP_VALUES",0,PDHLookup_TableRowNum,"Code")
+			Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",PDHLookup_TableRowNum,"Code",PDHLookup_LookupCode)
+			Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",PDHLookup_TableRowNum,"Meaning",PDHLookup_LookupMeaning)
+			Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",PDHLookup_TableRowNum,"Description",PDHLookup_LookupDescription)
+			Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",PDHLookup_TableRowNum,"Tag",PDHLookup_Tag)
+			Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",PDHLookup_TableRowNum,"From",PDHLookup_From)
+			Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",PDHLookup_TableRowNum,"To",PDHLookup_To)
+			
+			If Ucase(PDHLookup_Enabled) = "CHECKED" Then
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",PDHLookup_TableRowNum,"Enabled","True")
+			ElseIf Ucase(PDHLookup_Enabled)= "UNCHECKED" or Ucase(PDHLookup_Enabled)= "NOT CHECKED" Then
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",PDHLookup_TableRowNum,"Enabled","False")
+			End If
+			
+			Call SetFocusTable("Application Object Library Lookups","FND_LOOKUP_VALUES",0,PDHLookup_TableRowNum,"[  ]")
+			Call EnterTextFlexField("Common Lookups","Context Value",0,PDHLookup_ContextValue)
+			wait 3
+			Set textFieldObj= Description.Create()   
+			textFieldObj("micclass").value="OracleTextField"              
+			Set childObj=OracleFlexWindow("title:=Common Lookups").ChildObjects(textFieldObj)
+			PDHLookup_textBoxNum = childObj.count
+			Set textFieldObj = nothing
+			Set childObj = nothing
+			If PDHLookup_textBoxNum > 2 Then
+				For PDHLookup_AttributeNum = 2 To PDHLookup_textBoxNum
+					If OracleFlexWindow("title:=Common Lookups").OracleTextField("index:="& PDHLookup_AttributeNum-1).Exist(1) Then
+						Call EnterTextFlexField("Common Lookups",".*",PDHLookup_AttributeNum-1,Eval("PDHLookup_ATTR"&PDHLookup_AttributeNum-1))
+					Else 
+						Exit for
+					End If
+				Next
+			End If
+			Call ClickFlexButton("Common Lookups","OK")
+			Call SelectMenu("Application Object Library Lookups","File->Save")
+			PDHLookup_TableRowNum= PDHLookup_TableRowNum + 1
+			PDHLookup_LookupNum = PDHLookup_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"PDHLookup",PDHLookup_LookupNum)
+			If PDHLookup_LookupCode <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+		Loop until PDHLookup_LookupType <> ""
+		
+	ElseIf Ucase(PDHLookup_Operation)= "CHANGE" Then
+		Call SelectMenu("Application Object Library Lookups","View->Query By Example->Enter")
+		Call EnterTextForm("Application Object Library Lookups","Type",0,PDHLookup_LookupType)
+		Call SelectMenu("Application Object Library Lookups","View->Query By Example->Run")
+		Call SetFocusTable("Application Object Library Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+		Do
+			Set objTableObject = OracleFormWindow("short title:=Application Object Library Lookups").OracleTable("block name:=FND_LOOKUP_VALUES","index:=0")
+			tableRowNumber = GetRowNumOfSpecificValueInTableColumn(objTableObject,"Code",PDHLookup_LookupCode)
+			Set objTableObject = nothing
+			Environment.Value("blnFatalError")=False
+			If OracleNotification("title:=Forms").Exist(5) Then
+				Call ClickNotificationButton("Forms","OK")
+			End If 
+			If IsNumeric(tableRowNumber) Then
+				Call SetFocusTable("Application Object Library Lookups","FND_LOOKUP_VALUES",0,tableRowNumber,"Code")
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Meaning",PDHLookup_LookupMeaning)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Description",PDHLookup_LookupDescription)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Tag",PDHLookup_Tag)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",tableRowNumber,"From",PDHLookup_From)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",tableRowNumber,"To",PDHLookup_To)
+				
+				If Ucase(PDHLookup_Enabled) = "CHECKED" Then
+					Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Enabled","True")
+				ElseIf Ucase(PDHLookup_Enabled)= "UNCHECKED" or Ucase(PDHLookup_Enabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Enabled","False")
+				End If
+				Call SetFocusTable("Application Object Library Lookups","FND_LOOKUP_VALUES",0,tableRowNumber,"[  ]")
+				
+			Else
+				Call SetFocusTable("Application Object Library Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+				Call SelectMenu("Application Object Library Lookups","File->New")
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",2,"Code",PDHLookup_LookupCode)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",2,"Meaning",PDHLookup_LookupMeaning)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",2,"Description",PDHLookup_LookupDescription)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",2,"Tag",PDHLookup_Tag)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",2,"From",PDHLookup_From)
+				Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",2,"To",PDHLookup_To)
+				
+				If Ucase(PDHLookup_Enabled) = "CHECKED" Then
+					Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",2,"Enabled","True")
+				ElseIf Ucase(PDHLookup_Enabled)= "UNCHECKED" or Ucase(PDHLookup_Enabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Application Object Library Lookups","FND_LOOKUP_VALUES",2,"Enabled","False")
+				End If
+				Call SetFocusTable("Application Object Library Lookups","FND_LOOKUP_VALUES",0,2,"[  ]")
+			End If
+			Call EnterTextFlexField("Common Lookups","Context Value",0,PDHLookup_ContextValue)
+			wait 3
+			Set textFieldObj= Description.Create()   
+			textFieldObj("micclass").value="OracleTextField"              
+			Set childObj=OracleFlexWindow("title:=Common Lookups").ChildObjects(textFieldObj)
+			PDHLookup_textBoxNum = childObj.count
+			Set textFieldObj = nothing
+			Set childObj = nothing
+			If PDHLookup_textBoxNum > 2 Then
+				For PDHLookup_AttributeNum = 2 To PDHLookup_textBoxNum
+					If OracleFlexWindow("title:=Common Lookups").OracleTextField("index:="& PDHLookup_AttributeNum-1).Exist(1) Then
+						Call EnterTextFlexField("Common Lookups",".*",PDHLookup_AttributeNum-1,Eval("PDHLookup_ATTR"&PDHLookup_AttributeNum-1))
+					Else 
+						Exit for
+					End If
+				Next
+			End If
+			Call ClickFlexButton("Common Lookups","OK")
+			Call SelectMenu("Application Object Library Lookups","File->Save")
+			PDHLookup_LookupNum = PDHLookup_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"PDHLookup",PDHLookup_LookupNum)
+			If PDHLookup_LookupCode <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+		Loop until PDHLookup_LookupType <> ""
+		
+	ElseIf Ucase(PDHLookup_Operation)= "DELETE" Then
+		Call SelectMenu("Application Object Library Lookups","View->Query By Example->Enter")
+		Call EnterTextForm("Application Object Library Lookups","Type",0,PDHLookup_LookupType)
+		Call SelectMenu("Application Object Library Lookups","View->Query By Example->Run")
+		Call SetFocusTable("Application Object Library Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+		Do
+			Call SetFocusTableForSpecificValue("Application Object Library Lookups","FND_LOOKUP_VALUES","Code",PDHLookup_LookupCode)
+			Call SelectMenu("Application Object Library Lookups","Edit->Clear->Record")
+			Call SelectMenu("Application Object Library Lookups","File->Save")
+			PDHLookup_LookupNum = PDHLookup_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"PDHLookup",PDHLookup_LookupNum)
+		Loop until PDHLookup_LookupType <> ""
+		
+	End If
+	Call SetFocusForm("Application Object Library Lookups","FND_LOOKUP_TYPES_MEANING_0")
+	Call SelectMenu("Application Object Library Lookups","File->Save")	
+Loop While PDHLookup_Phase <> ""
+
+Call CloseForm("Application Object Library Lookups")
+'Call SelectMenu("Navigator","File->Exit Oracle Applications")
+'Call ClickNotificationButton("Caution","OK")
+'Call CloseBrowser("Oracle Applications R12.*")
+'Call clickLinkWeb("Oracle Applications Home Page","Logout",0)
+'wait 5
+'Call CloseBrowser("Login.*")
+Call FinalStatus()
+
+--------------------------------------------------
+
+shipping lookup::
+
+
+Call StartExecution(InputFilePath,"ShippingLookups",2)
+Call SwitchResponsibility(ShippingLookups_ResponsibilityName)
+Call SelectFromNavigator("Setup:Lookups")
+ShippingLookups_LookupNum = 2
+Call GetInputFromExcel(InputFilePath,"ShippingLookups",ShippingLookups_LookupNum)
+Do
+	If ucase(ShippingLookups_Operation) = "ADD" Then
+		Call SelectMenu("Shipping Execution Lookups","File->New")
+		Call EnterTextForm("Shipping Execution Lookups","Type",0,ShippingLookups_LookupType)
+		Call EnterTextForm("Shipping Execution Lookups","Lookup Type Meaning",0,ShippingLookups_Meaning)
+		Call EnterTextForm("Shipping Execution Lookups","Application",0,ShippingLookups_Application)	
+		ShippingLookups_TableRowNum = 1
+		Do
+			Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,ShippingLookups_TableRowNum,"Code")
+			Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",ShippingLookups_TableRowNum,"Code",ShippingLookups_LookupCode)
+			Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",ShippingLookups_TableRowNum,"Meaning",ShippingLookups_LookupMeaning)
+			Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",ShippingLookups_TableRowNum,"Description",ShippingLookups_LookupDescription)
+			Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",ShippingLookups_TableRowNum,"Tag",ShippingLookups_Tag)
+			Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",ShippingLookups_TableRowNum,"From",ShippingLookups_From)
+			Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",ShippingLookups_TableRowNum,"To",ShippingLookups_To)
+			
+			If Ucase(ShippingLookups_Enabled) = "CHECKED" Then
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",ShippingLookups_TableRowNum,"Enabled","True")
+			ElseIf Ucase(ShippingLookups_Enabled)= "UNCHECKED" or Ucase(ShippingLookups_Enabled)= "NOT CHECKED" Then
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",ShippingLookups_TableRowNum,"Enabled","False")
+			End If
+			
+			Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,ShippingLookups_TableRowNum,"[  ]")
+			Call EnterTextFlexField("Common Lookups","Context Value",0,ShippingLookups_ContextValue)
+			wait 3
+			Set textFieldObj= Description.Create()
+			textFieldObj("micclass").value="OracleTextField"
+			Set childObj=OracleFlexWindow("title:=Common Lookups").ChildObjects(textFieldObj)
+			ShippingLookups_textBoxNum = childObj.count
+			Set textFieldObj = nothing
+			Set childObj = nothing
+			If ShippingLookups_textBoxNum > 2 Then
+				For ShippingLookups_AttributeNum = 2 To ShippingLookups_textBoxNum
+					If OracleFlexWindow("title:=Common Lookups").OracleTextField("index:="& ShippingLookups_AttributeNum-1).Exist(5) Then
+						Call EnterTextFlexField("Common Lookups",".*",ShippingLookups_AttributeNum-1,Eval("ShippingLookups_ATTR"&ShippingLookups_AttributeNum-1))
+					End If
+				Next
+			End If
+			Call ClickFlexButton("Common Lookups","OK")
+			Call SelectMenu("Shipping Execution Lookups","File->Save")
+			ShippingLookups_TableRowNum= ShippingLookups_TableRowNum + 1
+			ShippingLookups_LookupNum = ShippingLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"ShippingLookups",ShippingLookups_LookupNum)
+			If ShippingLookups_LookupCode <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+			
+		Loop until ShippingLookups_LookupType <> ""
+
+	ElseIf ucase(ShippingLookups_Operation)= "CHANGE" Then
+		Call SelectMenu("Shipping Execution Lookups","View->Query By Example->Enter")
+		Call EnterTextForm("Shipping Execution Lookups","Type",0,ShippingLookups_LookupType)
+		Call SelectMenu("Shipping Execution Lookups","View->Query By Example->Run")
+		Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+		Do
+			Set objTableObject = OracleFormWindow("short title:=Shipping Execution Lookups").OracleTable("block name:=FND_LOOKUP_VALUES","index:=0")
+			tableRowNumber = GetRowNumOfSpecificValueInTableColumn(objTableObject,"Code",ShippingLookups_LookupCode)
+			Set objTableObject = nothing
+			Environment.Value("blnFatalError")=False
+			If OracleNotification("title:=Forms").Exist(5) Then
+				Call ClickNotificationButton("Forms","OK")
+			End If 
+			If IsNumeric(tableRowNumber) Then
+				Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,tableRowNumber,"Code")
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Meaning",ShippingLookups_LookupMeaning)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Description",ShippingLookups_LookupDescription)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Tag",ShippingLookups_Tag)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",tableRowNumber,"From",ShippingLookups_From)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",tableRowNumber,"To",ShippingLookups_To)
+				
+				If Ucase(ShippingLookups_Enabled) = "CHECKED" Then
+					Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Enabled","True")
+				ElseIf Ucase(ShippingLookups_Enabled)= "UNCHECKED" or Ucase(ShippingLookups_Enabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",tableRowNumber,"Enabled","False")
+				End If
+				
+				Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,tableRowNumber,"[  ]")
+			Else
+				Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+				Call SelectMenu("Shipping Execution Lookups","File->New")
+				Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,2,"Code")
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",2,"Code",ShippingLookups_LookupCode)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",2,"Meaning",ShippingLookups_LookupMeaning)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",2,"Description",ShippingLookups_LookupDescription)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",2,"Tag",ShippingLookups_Tag)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",2,"From",ShippingLookups_From)
+				Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",2,"To",ShippingLookups_To)
+				
+				If Ucase(ShippingLookups_Enabled) = "CHECKED" Then
+					Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",2,"Enabled","True")
+				ElseIf Ucase(ShippingLookups_Enabled)= "UNCHECKED" or Ucase(ShippingLookups_Enabled)= "NOT CHECKED" Then
+					Call EnterTextTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",2,"Enabled","False")
+				End If
+				
+				Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,2,"[  ]")
+			End If
+			Call EnterTextFlexField("Common Lookups","Context Value",0,ShippingLookups_ContextValue)
+			wait 3
+			Set textFieldObj= Description.Create()
+			textFieldObj("micclass").value="OracleTextField"
+			Set childObj=OracleFlexWindow("title:=Common Lookups").ChildObjects(textFieldObj)
+			ShippingLookups_textBoxNum = childObj.count
+			Set textFieldObj = nothing
+			Set childObj = nothing
+			If ShippingLookups_textBoxNum > 2 Then
+				For ShippingLookups_AttributeNum = 2 To ShippingLookups_textBoxNum
+					If OracleFlexWindow("title:=Common Lookups").OracleTextField("index:="& ShippingLookups_AttributeNum-1).Exist(5) Then
+						Call EnterTextFlexField("Common Lookups",".*",ShippingLookups_AttributeNum-1,Eval("ShippingLookups_ATTR"&ShippingLookups_AttributeNum-1))
+					End If
+				Next
+			End If
+			Call ClickFlexButton("Common Lookups","OK")
+			Call SelectMenu("Shipping Execution Lookups","File->Save")
+			ShippingLookups_LookupNum = ShippingLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"ShippingLookups",ShippingLookups_LookupNum)
+			If ShippingLookups_LookupCode <> "" Then
+				wait 1
+			Else 
+				Exit Do 
+			End If
+		Loop until ShippingLookups_LookupType <> ""
+		
+	ElseIf ucase(ShippingLookups_Operation)= "DELETE" Then
+		Call SelectMenu("Shipping Execution Lookups","View->Query By Example->Enter")
+		Call EnterTextForm("Shipping Execution Lookups","Type",0,ShippingLookups_LookupType)
+		Call SelectMenu("Shipping Execution Lookups","View->Query By Example->Run")
+		Call SetFocusTable("Shipping Execution Lookups","FND_LOOKUP_VALUES",0,1,"Code")
+		Do
+			Call SetFocusTableForSpecificValue("Shipping Execution Lookups","FND_LOOKUP_VALUES","Code",ShippingLookups_LookupCode)
+			Call SelectMenu("Shipping Execution Lookups","Edit->Clear->Record")
+			Call SelectMenu("Shipping Execution Lookups","File->Save")
+			ShippingLookups_LookupNum = ShippingLookups_LookupNum + 1
+			Call GetInputFromExcel(InputFilePath,"ShippingLookups",ShippingLookups_LookupNum)
+		Loop until ShippingLookups_LookupType <> "" 	
+		
+	End If
+	Call SetFocusForm("Shipping Execution Lookups","FND_LOOKUP_TYPES_MEANING_0")
+	Call SelectMenu("Shipping Execution Lookups","File->Save")
+Loop While ShippingLookups_Phase <> ""
+
+Call CloseForm("Shipping Execution Lookups")
+Call SelectMenu("Navigator","File->Exit Oracle Applications")
+Call ClickNotificationButton("Caution","OK")
+Call CloseBrowser("Oracle Applications R12.*")
+Call clickLinkWeb("Oracle Applications Home Page","Logout",0)
+wait 5
+Call CloseBrowser("Login.*")
+Call FinalStatus()

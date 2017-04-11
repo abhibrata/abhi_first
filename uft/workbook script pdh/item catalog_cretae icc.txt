@@ -1,0 +1,60 @@
+
+Call StartExecution(InputFilePath,"CreateICC",2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",CreateICC_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Setup",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Setup Workbench",0)
+
+For CreateICC_Iterator = 1 To CreateICC_NumberOfValues
+	
+	Call GetInputFromExcel(InputFilePath,"CreateICC",CreateICC_Iterator+1)
+	If Ucase(CreateICC_Operation) = "CREATE" or Ucase(CreateICC_Operation) = "ADD" Then
+		Call ClickLinkWeb("Item Catalog Categories", "Create Item Catalog Category", 0)
+		'Fill Item Category
+		Call EnterTextWeb ("Create/Edit Item Catalog Category", "EgoCatalogGroupKeyFlex0", 0, CreateICC_Catalog)
+		'Fill Item Catalog Category Details
+		Call EnterTextWeb("Create/Edit Item Catalog Category", "EgoDescription", 0, CreateICC_Description)
+		Call EnterTextWeb("Create/Edit Item Catalog Category", "EgoParentCatalogGroupName", 0, CreateICC_ParentItemCategory)
+		Call EnterTextWeb("Create/Edit Item Catalog Category", "EgoEffEndDate", 0, CreateICC_Inactivate)
+		Call EnterTextWeb("Create/Edit Item Catalog Category", "EgoDefaultTemplateName", 0, CreateICC_DefaultTemplate)
+		If Ucase(CreateICC_ItemCreationAllowed)= "CHECKED" Then
+			Call SelectCheckBoxWeb("Create/Edit Item Catalog Category","EgoItemCreationAllow","TRUE")
+		ElseIf Ucase(CreateICC_ItemCreationAllowed)= "NOT CHECKED" or Ucase(CreateICC_ItemCreationAllowed)= "UNCHECKED" Then
+			Call SelectCheckBoxWeb("Create/Edit Item Catalog Category","EgoItemCreationAllow","FALSE")	
+		End If
+		Call ClickButtonWeb("Create/Edit Item Catalog Category", "Apply", 0)
+		wait 5
+		Call CaptureScreenshot("","")
+		Call ClickLinkWeb("Basic Information","Item Catalog Categories",0)
+	Else
+		Call SelectListWeb("Item Catalog Categories","EgoListSearchContextValue",0,"Item Catalog Category")
+		Call EnterTextWeb("Item Catalog Categories", "EgoItemTypeListSearchValue",0,CreateICC_Catalog)
+		Call ClickButtonWeb("Item Catalog Categories","Go",0)
+		wait 5
+		Call ClickLinkWeb("Item Catalog Categories",CreateICC_Catalog,0)
+		wait 5
+		Call ClickButtonWeb("Basic Information","Update",0)
+		wait 5
+		'Fill Item Catalog Category Details
+		Call UpdateTextWeb("Create/Edit Item Catalog Category", "EgoDescription", 0, CreateICC_Description)
+		Call UpdateTextWeb("Create/Edit Item Catalog Category", "EgoParentCatalogGroupName", 0, CreateICC_ParentItemCategory)
+		Call UpdateTextWeb("Create/Edit Item Catalog Category", "EgoEffEndDate", 0, CreateICC_Inactivate)
+		Call UpdateTextWeb("Create/Edit Item Catalog Category", "EgoDefaultTemplateName", 0, CreateICC_DefaultTemplate)
+		If Ucase(CreateICC_ItemCreationAllowed)= "CHECKED" Then
+			Call SelectCheckBoxWeb("Create/Edit Item Catalog Category","EgoItemCreationAllow","TRUE")
+		ElseIf Ucase(CreateICC_ItemCreationAllowed)= "NOT CHECKED" or Ucase(CreateICC_ItemCreationAllowed)= "UNCHECKED" Then
+			Call SelectCheckBoxWeb("Create/Edit Item Catalog Category","EgoItemCreationAllow","FALSE")	
+		End If
+		Call ClickButtonWeb("Create/Edit Item Catalog Category", "Apply", 0)
+		wait 5
+		Call CaptureScreenshot("","")
+		Call ClickLinkWeb("Basic Information","Item Catalog Categories",0)
+		
+	End If
+	
+Next
+
+wait 5
+Call ClickLinkWeb("Item Catalog Categories","Logout",0)
+wait 5
+Call CloseBrowser("Login.*")
+Call FinalStatus()

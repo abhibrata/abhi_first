@@ -1,0 +1,59 @@
+InputFilePath = "C:\Oracle_e-Swift\input\PDH26_Profile_Options.xls"
+
+Call StartExecution(InputFilePath,"ProfOptions",2)
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","System Administrator",0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Profile",0)
+Call ClickLinkWeb("Oracle Applications Home Page","System",0)
+
+Call waitUntilFormExist("Find System Profile Values")
+
+i=2
+Call GetInputFromExcel(InputFilePath,"ProfOptions",i)
+
+Do
+
+	Call SelectCheckBox("Find.*","PROFILE_QF_SITE_BOX_0",Site_Box)
+	Call SelectCheckBox("Find.*","PROFILE_QF_APPLICATION_BOX_0",App_Box)
+	Call EnterTextForm("Find.*","Application Name",0,App_Name)
+	Call SelectCheckBox("Find.*","PROFILE_QF_RESPONSIBILITY_BOX_0",Resp_Box)
+	Call EnterTextForm("Find.*","Responsibility Name",0,Resp_Name)
+	Call SelectCheckBox("Find.*","PROFILE_QF_SERVER_BOX_0",Server_Box)
+	Call EnterTextForm("Find.*","Server Name",0,Server_Name)
+	Call SelectCheckBox("Find.*","PROFILE_QF_ORG_BOX_0",Org_Box)
+	Call EnterTextForm("Find.*","Organization  Name",0,Org_Name)
+	Call SelectCheckBox("Find.*","PROFILE_QF_USER_BOX_0",User_Box)
+	Call EnterTextForm("Find.*","User Name",0,User_Name)
+	Call EnterTextForm("Find.*","Profile",0,Prof_Name)
+	Call ClickButton("Find.*","PROFILE_QF_FIND_0")
+	
+	Call EnterTextTable("System Profile Values","PROFILE_VALUES",1,"Site",Site_Val)
+	Call EnterTextTable("System Profile Values","PROFILE_VALUES",1,"Application",App_Val)
+	Call EnterTextTable("System Profile Values","PROFILE_VALUES",1,"Responsibility",Resp_Val)
+	Call EnterTextTable("System Profile Values","PROFILE_VALUES",1,"User",User_Val)
+	Call SelectMenu("System.*","File->Save")
+	Call SelectMenu("System.*","View->Query By Example->Enter")
+	
+	i=i+1
+	Call GetInputFromExcel(InputFilePath,"ProfOptions",i)
+	
+	if Prof_Name <> "" then
+		wait 1
+	else
+		exit do
+	end if
+ 
+loop while Prof_Name <> ""
+
+Call CloseForm("Find.*")
+
+Call SelectMenu ("Navigator","File->Exit Oracle Applications")
+Call ClickNotificationButton ("Caution","OK")
+Call CloseBrowser ("Oracle Applications R12*")
+Call ClickLinkWeb ("Oracle Applications Home Page","Logout","0")
+wait 5
+Call CloseBrowser ("Login.*")
+Call FinalStatus()
+
+Call ResultZipFile_Upload (gstrScenarioResultFolder)
+Call RemoveUserEnvironmentVariable ("e_Swift_SingleReportFolderPath")

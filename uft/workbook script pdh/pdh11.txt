@@ -1,0 +1,428 @@
+add component::
+
+
+
+Call StartExecution(InputFilePath,"Add_Component_AG",2)
+	
+	
+	
+	pdh_message = 2
+	
+	Call GetInputFromExcel(InputFilePath,"Add_Component_AG",pdh_message)
+	   
+	Do
+	
+	
+	Browser("Structure Types").Page("Structure Types").WebEdit("BomStructureTypeListInputValue").Set "MHE BUNDLE"
+    Browser("Structure Types").Page("Structure Types").WebButton("Go").Click
+    Browser("Structure Types").Page("Structure Types").Link("MHE BUNDLE").Click
+
+   Browser("Structure Types").Page("Structure Types").Link("Component Attribute Groups").Click
+  Browser("Structure Types").Page("Structure Types").WebButton("Add Attribute Groups").Click
+
+  rowIndex = GetWebelementIndexFromWebTable("Attribute Group Search and Select","A","N3:displayName:",display_name01)
+  Call SelectCheckBoxWebWithIndex("Attribute Group Search and Select","N3:selected:"& rowIndex,0,"True")
+   wait 5
+   
+  Browser("Structure Types").Page("Structure Types").WebButton("Apply").Click
+	
+	wait 1
+	
+	
+	pdh_message= pdh_message + 1
+	Call GetInputFromExcel(InputFilePath,"Add_Component_AG",pdh_message)
+	loop while display_name01 <> ""
+	
+	Browser("Attribute Groups").Page("Attribute Groups").Link("Structure Types").Click
+	Call FinalStatus()
+	
+----------------------------------------------------------
+
+create structure::
+
+
+
+Call StartExecution(InputFilePath,"Create_Structure_Names",2)
+
+
+pdh_message = 2
+
+Call GetInputFromExcel(InputFilePath,"Create_Structure_Names",pdh_message)
+   
+Do 
+
+if(STATUS)="Add" THEN
+
+
+Browser("Create Structure Type").Page("Create Structure Type").Link("Create Structure Names").Click
+
+'Browser("Structure Types").Page("Structure Types").Link("Create Structure Names").Click
+
+
+Browser("Create Structure Type").Page("Create Structure Type").WebEdit("StructureName").Set Internal_Name1
+Browser("Create Structure Type").Page("Create Structure Type").WebEdit("StructureDisplayName").Set Display_Name1
+Browser("Create Structure Type").Page("Create Structure Type").WebEdit("StructureNameDesc").Set Description1
+Browser("Create Structure Type").Page("Create Structure Type").WebEdit("StructureTypeLov").Set Structure_Type1
+Browser("Create Structure Type").Page("Create Structure Type").Image("Search for Structure Type").Click
+Browser("Search and Select List").Page("Search and Select List").Frame("Frame").WebRadioGroup("N1:selected").Select "0"
+WAIT 4
+Browser("Search and Select List").Page("Search and Select List").Frame("Frame").WebButton("Select").Click
+wait 4
+Browser("Create Structure Type").Page("Create Structure Type").Link("Next 10").Click
+WAIT 4
+Browser("Create Structure Type").Page("Create Structure Type").WebCheckBox("N34:OrgAssignment:6").Set "ON"
+WAIT 4
+Browser("Create Structure Type").Page("Create Structure Type").WebButton("Apply").Click
+'Browser("Create Structure Type").Page("Create Structure Type").Image("Search for Structure Type").Click
+
+
+'Browser("Create Structure Type").Page("Search and Select List").Frame("Frame").WebRadioGroup("N1:selected").Select "0"
+'Browser("Create Structure Type").Page("Search and Select List").Frame("Frame").WebButton("Select").Click
+
+'Browser("Create Structure Type").Page("Create Structure Type").WebCheckBox("N34:OrgAssignment:6").Set "ON"
+'Browser("Create Structure Type").Page("Create Structure Type").WebButton("Apply").Click
+
+elseif(STATUS)="Update" then
+
+Browser("Create Structure Type").Page("Create Structure Type").WebEdit("BomStructureNameListInputValue").Set Display_Name0
+Browser("Create Structure Type").Page("Create Structure Type").WebButton("Go").Click
+wait 4
+'Browser("Create Structure Type").Page("Create Structure Type").Link(Display_Name0).Click
+Call ClickLinkWebWithHtmlid("Structure Names","N3:DisplayName:0",0)
+WAIT 5
+Browser("Create Structure Type").Page("Create Structure Type").WebButton("Update").Click
+WAIT 4
+
+Browser("Create Structure Type").Page("Create Structure Type").WebEdit("StructureName").Set Internal_Name1
+Browser("Create Structure Type").Page("Create Structure Type").WebEdit("StructureDisplayName").Set Display_Name1
+Browser("Create Structure Type").Page("Create Structure Type").WebButton("Apply").Click
+wait 4
+   
+   elseif(STATUS)="Remove" then
+
+
+
+      if(Delete)="Whole" then
+        Browser("Create Structure Type").Page("Create Structure Type").Link("Structure Names").Click
+        rowIndex = GetWebelementIndexFromWebTable("Structure Names","A","N3:DisplayName:",Display_Name1)
+        Call SelectCheckBoxWebWithIndex("Structure Names","N3:selected:"& rowIndex,0,"True")
+    
+        WAIT 4
+        Browser("Create Structure Type").Page("Create Structure Type").WebButton("Delete").Click
+        
+        elseif(Delete)="Single" then
+        
+            Browser("Create Structure Type").Page("Create Structure Type").WebEdit("BomStructureNameListInputValue").Set Display_Name1
+            Browser("Create Structure Type").Page("Create Structure Type").WebButton("Go").Click   
+            wait 4
+            Call ClickLinkWebWithHtmlid("Structure Names","N3:DisplayName:0",0)
+            WAIT 2
+            Browser("Create Structure Type").Page("Create Structure Type").WebButton("Update").Click
+            WAIT 4
+            Browser("Create Structure Type").Page("Create Structure Type").WebCheckBox("N34:OrgAssignment:0").Set "OFF"
+            WAIT 5
+            Browser("Create Structure Type").Page("Create Structure Type").WebButton("Apply").Click
+       End if
+End if
+pdh_message= pdh_message + 1
+Call GetInputFromExcel(InputFilePath,"Create_Structure_Names",pdh_message)
+loop while Display_Name1 <> ""
+
+
+
+Browser("Create Structure Type").Page("Create Structure Type").Link("Attributes").Click
+Call FinalStatus()
+----------------------------------------------------------------
+
+define structure type:;
+
+
+Call StartExecution(InputFilePath,"Define_Structure_Types",2)
+
+
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","MHE Change Control",0)  
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Setup",0)  
+Call ClickLinkWeb("Oracle Applications Home Page","Setup Workbench",0)
+
+Call ClickLinkWeb("Item Catalog Categories","Structures",0)
+Call ClickLinkWeb("Structure Types","Structure Types",0)
+Call ClickLinkWeb("Structure Types","Create Structure Type",0)
+wait 5
+pdh_message = 2
+
+Call GetInputFromExcel(InputFilePath,"Define_Structure_Types",pdh_message)
+   
+Do 
+Browser("Create / Edit Structure").Page("Create / Edit Structure").WebEdit("internalName").Set Internal_Name
+Browser("Create / Edit Structure").Page("Create / Edit Structure").WebEdit("displayName").Set Display_Name
+
+'Call EnterTextWeb("Create / Edit Structure Type","internalName",0,Internal_Name)
+'Call EnterTextWeb("Create / Edit Structure Type","displayName",0,Display_Name)
+Call EnterTextWeb("Create / Edit Structure Type","description",0,Description_1)
+Call clickButtonWeb("Create / Edit Structure Type","apply",0)
+pdh_message= pdh_message + 1
+Call GetInputFromExcel(InputFilePath,"Define_Structure_Types",pdh_message)
+loop while Internal_Name <> ""
+
+
+Browser("Create / Edit Structure").Page("Create / Edit Structure").Link("Structure Names").Click
+
+Call FinalStatus()
+
+
+--------------------------------------------------
+
+setup component::
+
+
+
+Call StartExecution(InputFilePath,"Setup_Component_Attribute_Grp",2)
+
+'Call ClickLinkWeb("Cretae/Edit Structure Types","Attributes",0)
+'call clickLinkWeb("Search:Attribute Groups","EGO_BOM_CREATE_COMP_USER_ATTR",0)
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").Link("Component Attribute Groups").Click
+'call clickButtonWeb("Search:Attribute Groups","createAttrGroupButton",0)
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebButton("Create").Click
+pdh_message = 2
+
+Call GetInputFromExcel(InputFilePath,"Setup_Component_Attribute_Grp",pdh_message)
+   
+Do 
+
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebEdit("EgoInterName").Set Internal_Name2
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebEdit("EgoDisplayName").Set Display_Name2
+'Call EnterTextWeb("Create Attribute Group","EgoInterName",0,Internal_Name2)
+'Call EnterTextWeb("Create Attribute Group","EgoDisplayName",0,Display_Name2)
+Call SelectFromLOV("EgoAGBehaviorChoice",Row)
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebCheckBox("BusinessEntityTable:selected:0").Set "ON"
+
+if(Pre)="Yes" then
+'Call SelectCheckBoxWeb("Create Attribute Group","BusinessEntityTable:PreEvent:0",True)
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebCheckBox("BusinessEntityTable:PreEvent:0").Set "ON"
+End if
+
+if(Post)="Yes" then
+'Call SelectCheckBoxWeb("Create Attribute Group","BusinessEntityTable:PostEvent:0",True)
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebCheckBox("BusinessEntityTable:PostEvent:0").Set "ON"
+End if
+'Call ClickButtonWeb("Create Attribute Group","Apply",0)
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebButton("Apply").Click
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebButton("Add Attribute").Click
+
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebEdit("internalName").Set Internal_Name3
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebEdit("displayName").Set Display_Name3
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebEdit("sequence").Set Sequence
+Call SelectFromLOV("dataType",data_type)
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebEdit("dbColumnLOV").Set Column
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").Image("Search for Column").Click
+Browser("Search and Select List").Page("Search and Select List").Frame("Frame").WebRadioGroup("N1:selected").Select "0"
+Browser("Search and Select List").Page("Search and Select List").Frame("Frame").WebButton("Select").Click
+
+'Call EnterTextWeb("Search: Attribute Groups","dbColumnLOV",0,Column)
+
+'Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebCheckBox("enabled").Set Enabled
+'Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebCheckBox("required").Set Required
+Call SelectCheckBoxWeb("Search: Attribute Groups","enabled",Enabled)
+Call SelectCheckBoxWeb("Search: Attribute Groups","required",Required)
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebList("displayAs").Select display_as
+'Call SelectFromLOV("displayAs",display_as)
+
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebEdit("valueSetNameLOV").Set Value_Set_Name
+'Call EnterTextWeb("Search: Attribute Groups","valueSetNameLOV",0,Value_Set_Name)
+'Call clickButtonWeb("Create Attribute","applyButton",0)
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").WebButton("Apply").Click
+
+pdh_message= pdh_message + 1
+Call GetInputFromExcel(InputFilePath,"Setup_Component_Attribute_Grp",pdh_message)
+loop while Internal_Name2 <> ""
+
+
+Browser("Search: Attribute Groups").Page("Search: Attribute Groups").Link("Structure Types").Click
+Call FinalStatus()
+------------------------------------------------------
+
+structure display::
+
+Call StartExecution(InputFilePath,"Structure_Display_Format",2)
+
+Browser("Structure Types").Page("Structure Types").Link("Structure Types").Click
+
+
+pdh_message = 2
+
+
+Call GetInputFromExcel(InputFilePath,"Structure_Display_Format",pdh_message)
+   
+Do 
+if(STATUS)="Add" THEN
+'Call ClickLinkWeb("Structure Tpes","EGO_STRUCTURE_TYPES_SUB_MENU",0)
+'Call EnterTextWeb("Structure Tpes","BomStructureTypeListInputValue",0,Name)
+'call ClickButtonWeb("Structure Tpes","BomStructureTypeListGoButton",0) 
+
+
+Browser("Structure Types").Page("Structure Types").WebEdit("BomStructureTypeListInputValue").Set Name
+Browser("Structure Types").Page("Structure Types").WebButton("Go").Click
+'Browser("Structure Types").Page("Structure Types").Link(Name).Click
+Call ClickLinkWebWithHtmlid("Structure Types","N3:DisplayName:0",0)
+'Browser("Structure Types").Page("Structure Types").Link("MHE BUNDLE").Click
+
+Call ClickLinkWeb("Basic Information","Display Formats",0)
+
+
+'Browser("Structure Types").Page("Structure Types").Link("Display Formats").Click
+
+Browser("Structure Types").Page("Structure Types").WebButton("Create").Click
+Browser("Structure Types").Page("Structure Types").WebEdit("EgoResultsFormatName").Set Name1
+
+
+Browser("Structure Types").Page("Structure Types").WebEdit("EgoResultsFormatDescription").Set description1
+Browser("Structure Types").Page("Structure Types").WebList("EgoResultsFormatNumRowsDisplayed").Select no_of_rows
+
+
+
+'Call ClickLinkWeb("Structure Tpes","N3:DisplayName:0",0)
+'Call ClickLinkWeb("Basic Information","Display Formats",0)
+'Call ClickButtonWeb("Display Formats","ResultFormatCreateButton",0)
+'Call EnterTextWeb("Create Display Format","EgoResultsFormatName",0,Name1)
+
+'Call EnterTextWeb("Create Display Format","EgoResultsFormatDescription",0,description1)
+'Call SelectFromLOV("EgoResultsFormatNumRowsDisplayed",no_of_rows)
+'Call SelectFromLOV("N82",Attribute_Group)
+pdh_att = 2
+Call GetInputFromExcel(InputFilePath,"Structure_Display_Format",pdh_att)
+
+
+do
+Browser("Structure Types").Page("Structure Types").WebList("ResultColumnAttrGroupPoplistName").Select Attribute_Group
+Browser("Structure Types").Page("Structure Types").WebButton("Go").Click
+Browser("Structure Types").Page("Structure Types").Image("Move all items to other").Click
+
+pdh_att= pdh_att + 1
+Call GetInputFromExcel(InputFilePath,"Structure_Display_Format",pdh_att)
+
+
+loop while Attribute_Group <> ""
+
+
+'Call ClickLinkWeb("Create Display Format","EgoRenameColumns",0)
+
+'Browser("Structure Types").Page("Structure Types").WebButton("Rename Columns").Click
+
+'Call EnterTextWeb("Rename Columns","N3:NewColumnName:0",0,Selected_Column)
+'Call ClickButtonWeb("Rename Columns","EgoContinueButton_uixr",0)
+
+wait 5
+Browser("Structure Types").Page("Structure Types").WebButton("Apply").Click
+    
+    
+    
+ELSEif(STATUS)="Delete" then
+
+
+Browser("Structure Types").Page("Structure Types").Link("Structure Types").Click
+Browser("Structure Types").Page("Structure Types").WebEdit("BomStructureTypeListInputValue").Set Name
+Browser("Structure Types").Page("Structure Types").WebButton("Go").Click
+Call ClickLinkWebWithHtmlid("Structure Types","N3:DisplayName:0",0)
+Call ClickLinkWeb("Basic Information","Display Formats",0)
+
+Browser("Structure Types").Page("Structure Types").Link("Next 3").Click
+rowIndex = GetWebelementIndexFromWebTable("Display Formats","SPAN","N4:ResultFormatName:",Name1)
+Call SelectCheckBoxWebWithIndex("Display Formats","N4:selected:"& rowIndex,0,"True")
+wait 3
+
+'Browser("Structure Types").Page("Structure Types").WebList("select").Select "11-12 of 12"
+'Browser("Structure Types").Page("Structure Types").WebCheckBox("N4:selected:2").Set "ON"
+
+Browser("Structure Types").Page("Structure Types").WebButton("Delete").Click
+   
+
+
+
+End if
+pdh_message = 5
+Call GetInputFromExcel(InputFilePath,"Structure_Display_Format",pdh_message)
+loop while description1 <> ""
+
+
+
+'Call CloseBrowser ("Oracle Applications R12*")
+
+Browser("Structure Types").Page("Structure Types").Link("Home").Click
+Browser("Structure Types").Page("Structure Types").Link("Logout").Click
+Browser("Structure Types").Page("Login").Sync
+'Browser("Structure Types").CloseAllTabs
+'Call ClickLinkWeb ("Oracle Applications Home Page","Logout","0")
+'wait 5
+'Call CloseBrowser ("Login.*")
+Call FinalStatus()
+
+Call ResultZipFile_Upload (gstrScenarioResultFolder)
+Call RemoveUserEnvironmentVariable ("e_Swift_SingleReportFolderPath")
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+ 
+ 
+ 
+

@@ -1,0 +1,44 @@
+Call StartExecution(InputFilePath,"AddSetValue",2)
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",AddSetValue_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Setup",0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Flexfields",0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Validation",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Values",0)
+Call waitUntilFormExist("Find.*")
+Call CloseForm("Find.*")
+Call waitUntilFormExist("Segment Values")
+Call SelectRadioButton("Segment Values","CONTROL_REGION_POPUP","Value Set")
+Call SetFocusForm_FieldDescription("Segment Values","Name",0)
+Call SelectMenu("Segment Values","View->Query By Example->Enter")
+Call EnterTextForm("Segment Values","Name",0,AddSetValue_SegmentName)
+Call SelectMenu("Segment Values","View->Query By Example->Run")
+
+For AddSetValue_Iterator = 1 To AddSetValue_NumberOfValues	
+
+	Call GetInputFromExcel(InputFilePath,"AddSetValue",AddSetValue_Iterator+1)
+	Call SetFocusTabbedRegionTable("Segment Values","Values, Effective","VALUE",1,"Value")
+	Call SelectMenu("Segment Values","File->New")
+	Call SetFocusTabbedRegionTable("Segment Values","Values, Effective","VALUE",2,"Value")
+	Call EnterTextTabbedRegionTable("Segment Values","Values, Effective",0,"VALUE",2,"Value",AddSetValue_SegmentValue)     
+	Call EnterTextTabbedRegionTable("Segment Values","Values, Effective",0,"VALUE",2,"Description",AddSetValue_SegmentDescription)
+	If Ucase(AddSetValue_SegmentEnable) = "CHECKED" Then
+		Call EnterTextTabbedRegionTable("Segment Values","Values, Effective",0,"VALUE",2,"Enabled","True")
+	ElseIf Ucase(AddSetValue_SegmentEnable) = "UNCHECKED" or Ucase(AddSetValue_SegmentEnable) = "NOT CHECKED" Then
+		Call EnterTextTabbedRegionTable("Segment Values","Values, Effective",0,"VALUE",2,"Enabled","False")	
+	End If
+	Call SelectMenu("Segment Values","File->Save")
+	Call ClickButton("Segment Values", "View Hierarchies")
+	Call CloseForm("Value Hierarchy")
+	
+Next
+
+Call CloseForm("Segment Values")
+Call SelectMenu ("Navigator","File->Exit Oracle Applications")
+Call ClickNotificationButton ("Caution","OK")
+Call CloseBrowser ("Oracle Applications R12*")
+'Call ClickLinkWeb ("Oracle Applications Home Page","Logout","0")
+'wait 5
+'Call CloseBrowser ("Login.*")
+Call FinalStatus()
+

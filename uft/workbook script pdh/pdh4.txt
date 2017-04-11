@@ -1,0 +1,576 @@
+assocValue set::
+
+
+'Create/Change Assoc Value Sets
+Call StartExecution(InputFilePath,"AssocValueSets",2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", AssocValueSets_ResponsibilityName, 0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", "Setup", 0)
+Call ClickLinkWeb("Oracle Applications Home Page", "Setup Workbench", 0)
+Set browserObj= Browser("name:=Item Catalog Categories")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+wait 5
+'Attribute Groups
+Call ClickLinkWeb("Item Catalog Categories", "Attribute Groups", 0)
+Set browserObj= Browser("name:=Attribute Groups")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+wait 5
+AssocValueSets_itemIterator = 1
+Do
+
+		Call EnterTextWeb("Attribute Groups", "Value_1", 0, AssocValueSets_AGInternalName)
+		Call ClickButtonWeb("Attribute Groups", "Go", 0)
+		wait 5
+		Call ClickLinkWebWithHtmlid("Attribute Groups", "(.*)?displayName:0", 0)
+		Set browserObj= Browser("name:=Attribute Group Details")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 5
+		Call ClickImageWebtableRefWebElement("Attribute Group Details", "N5:selected:0", 0,AssocValueSets_InternalName, 3, 12) 
+		Set browserObj= Browser("name:=Edit Attribute")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 5
+		'update Value Set
+		Call UpdateTextWeb("Edit Attribute", "valueSetNameLOV", 0, AssocValueSets_ValueSetName)
+		Call ClickButtonWeb("Edit Attribute", "Apply", 0)
+		Set browserObj= Browser("name:=Attribute Group Details")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing		
+		wait 5
+		AssocValueSets_itemIterator = AssocValueSets_itemIterator + 1
+		Call GetInputFromExcel(InputFilePath,"AssocValueSets",AssocValueSets_itemIterator + 1)
+		wait 5	
+		Call ClickLinkWeb("Attribute Group Details", "Attribute Groups", 0)
+		wait 5
+Loop While AssocValueSets_Phase <> ""
+
+Call ClickLinkWeb("Attribute Groups", "Home", 0)
+wait 5
+Call ClickLinkWeb("Oracle Applications Home Page", "Logout", 0)
+Call CloseBrowser("Login.*")
+Call FinalStatus()
+
+-------------------------------------------
+
+'Create/Change/Delete Attribute Group
+Call StartExecution(InputFilePath,"CreateAttributeGroup",2)
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", CreateAttributeGroup_ResponsibilityName, 0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", "Setup", 0)
+Call ClickLinkWeb("Oracle Applications Home Page", "Setup Workbench", 0)
+Set browserObj= Browser("name:=Item Catalog Categories")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+wait 5
+'Attribute Groups
+Call ClickLinkWeb("Item Catalog Categories", "Attribute Groups", 0)
+Set browserObj= Browser("name:=Attribute Groups")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+wait 5
+CreateAttributeGroup_itemIterator = 1
+Do
+	If Ucase(CreateAttributeGroup_Operation) = "ADD" Then
+		'Click Create button
+		Call ClickButtonWeb("Attribute Groups", "Create", 0)
+		Set browserObj= Browser("name:=Create Attribute Group")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 10
+		Call EnterTextWeb("Create Attribute Group", "EgoInterName", 0, CreateAttributeGroup_InternalName)
+		Call EnterTextWeb("Create Attribute Group", "EgoDisplayName", 0, CreateAttributeGroup_DisplayName)
+		Call EnterTextWeb("Create Attribute Group", "EgoDescription", 0, CreateAttributeGroup_Description)
+		Call SelectListWeb("Create Attribute Group", "EgoAGBehaviorChoice", 0, CreateAttributeGroup_Behavior)
+		wait 5
+		Call EnterTextWeb("Create Attribute Group", "EgoNumCols.*", 0, CreateAttributeGroup_NoOfColumnsPageLayout)
+		
+		CreateAttributeGroup_rowNumber1 = GetWebelementIndexFromWebTable("Create Attribute Group","SPAN","BusinessEntityTable:DataLevelName.*","Item")
+		wait 5
+		If Ucase(CreateAttributeGroup_BUSelect) = "CHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Create Attribute Group", "BusinessEntityTable:selected.*", CreateAttributeGroup_rowNumber1, "True")	
+		ElseIf Ucase(CreateAttributeGroup_BUSelect) = "UNCHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Create Attribute Group", "BusinessEntityTable:selected.*", CreateAttributeGroup_rowNumber1, "False")	
+		End If
+		Call SelectListWebWithIndex("Create Attribute Group", "BusinessEntityTable:DLbehavior:.*"& CreateAttributeGroup_rowNumber1, 0, CreateAttributeGroup_BUStyleToSKU )
+		wait 5
+		Call EnterTextWeb("Create Attribute Group", "BusinessEntityTable:ViewPrivilegeDispName.*", CreateAttributeGroup_rowNumber1, CreateAttributeGroup_BUView)
+		Call EnterTextWeb("Create Attribute Group", "BusinessEntityTable:EgoEditPrivilegeDispName.*", CreateAttributeGroup_rowNumber1, CreateAttributeGroup_BUPrivilegeEdit)
+		wait 5
+		If Ucase(CreateAttributeGroup_BUPre) = "CHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Create Attribute Group", "BusinessEntityTable:PreEvent.*", CreateAttributeGroup_rowNumber1, "True")
+		ElseIf Ucase(CreateAttributeGroup_BUPre) = "UNCHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Create Attribute Group", "BusinessEntityTable:PreEvent.*", CreateAttributeGroup_rowNumber1, "False")		
+		End If
+		wait 5
+		If Ucase(CreateAttributeGroup_BUCost) = "CHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Create Attribute Group", "BusinessEntityTable:PostEvent.*", CreateAttributeGroup_rowNumber1, "True")
+		ElseIf Ucase(CreateAttributeGroup_BUCost) = "UNCHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Create Attribute Group", "BusinessEntityTable:PostEvent.*", CreateAttributeGroup_rowNumber1, "False")		
+		End If
+		Call ClickButtonWeb("Create Attribute Group", "Apply", 0)
+		Set browserObj= Browser("name:=Attribute Group Details")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 10
+		Call ClickLinkWeb("Attribute Group Details", "Attribute Groups", 0)
+		wait 5
+	ElseIf Ucase(CreateAttributeGroup_Operation) = "CHANGE" Then
+		
+		Call EnterTextWeb("Attribute Groups", "Value_0", 0, CreateAttributeGroup_DisplayName)
+		Call EnterTextWeb("Attribute Groups", "Value_1", 0, CreateAttributeGroup_InternalName)
+		Call ClickButtonWeb("Attribute Groups", "Go", 0)
+		wait 5
+		Call ClickLinkweb("Attribute Groups", CreateAttributeGroup_DisplayName, 0)
+		Set browserObj= Browser("name:=Attribute Group Details")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 10
+		Call ClickButtonWeb("Attribute Group Details", "Update", 0)
+		Set browserObj= Browser("name:=Update Attribute Group")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 5
+		CreateAttributeGroup_rowNumber2 = GetWebelementIndexFromWebTable("Update Attribute Group","SPAN","BusinessEntityTable:DataLevelName.*","Item")
+		wait 5
+		If Ucase(CreateAttributeGroup_BUSelect) = "CHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Update Attribute Group", "BusinessEntityTable:selected.*", CreateAttributeGroup_rowNumber2, "True")	
+		ElseIf Ucase(CreateAttributeGroup_BUSelect) = "UNCHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Update Attribute Group", "BusinessEntityTable:selected.*", CreateAttributeGroup_rowNumber2, "False")	
+		End If
+		Call SelectListWebWithIndex("Update Attribute Group", "BusinessEntityTable:DLbehavior:"& CreateAttributeGroup_rowNumber2, 0, CreateAttributeGroup_BUStyleToSKU )
+		wait 5
+		Call UpdateTextWeb("Update Attribute Group", "BusinessEntityTable:ViewPrivilegeDispName.*", CreateAttributeGroup_rowNumber2, CreateAttributeGroup_BUView)
+		Call UpdateTextWeb("Update Attribute Group", "BusinessEntityTable:EgoEditPrivilegeDispName.*", CreateAttributeGroup_rowNumber2, CreateAttributeGroup_BUPrivilegeEdit)
+		wait 5
+		If Ucase(CreateAttributeGroup_BUPre) = "CHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Update Attribute Group", "BusinessEntityTable:PreEvent.*", CreateAttributeGroup_rowNumber2, "True")
+		ElseIf Ucase(CreateAttributeGroup_BUPre) = "UNCHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Update Attribute Group", "BusinessEntityTable:PreEvent.*", CreateAttributeGroup_rowNumber2, "False")		
+		End If
+		wait 5
+		If Ucase(CreateAttributeGroup_BUCost) = "CHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Update Attribute Group", "BusinessEntityTable:PostEvent.*", CreateAttributeGroup_rowNumber2, "True")
+		ElseIf Ucase(CreateAttributeGroup_BUCost) = "UNCHECKED" Then
+			Call SelectCheckBoxWebWithIndex("Update Attribute Group", "BusinessEntityTable:PostEvent.*", CreateAttributeGroup_rowNumber2, "False")		
+		End If
+		Call ClickButtonWeb("Update Attribute Group", "Apply", 0)
+		Set browserObj= Browser("name:=Attribute Group Details")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 5
+		Call ClickLinkWeb("Attribute Group Details", "Attribute Groups", 0)
+		wait 5
+	ElseIf Ucase(CreateAttributeGroup_Operation) = "DELETE" Then
+	
+		Call EnterTextWeb("Attribute Groups", "Value_0", 0, CreateAttributeGroup_DisplayName)
+		Call EnterTextWeb("Attribute Groups", "Value_1", 0, CreateAttributeGroup_InternalName)
+		Call ClickButtonWeb("Attribute Groups", "Go", 0)
+		wait 5
+		Call SelectCheckBoxWebWithIndex("Attribute Groups", "(.*)?selected.*",0,"True")
+		Call ClickButtonWeb("Attribute Groups", "Delete", 0)
+		wait 5
+		Call ClickButtonWeb("Warning", "Yes", 0)
+		wait 5
+		
+	End If
+	
+	CreateAttributeGroup_itemIterator = CreateAttributeGroup_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"CreateAttributeGroup",CreateAttributeGroup_itemIterator + 1)
+Loop While CreateAttributeGroup_Phase <> ""
+
+Call ClickLinkWeb("Attribute Groups", "Home", 0)
+Call FinalStatus()
+
+---------------------------------------------------------
+
+'Create/Change/Delete Attributes
+Call StartExecution(InputFilePath,"CreateAttributes",2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", CreateAttributes_ResponsibilityName, 0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", "Setup", 0)
+Call ClickLinkWeb("Oracle Applications Home Page", "Setup Workbench", 0)
+Set browserObj= Browser("name:=Item Catalog Categories")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+wait 5
+'Attribute Groups
+Call ClickLinkWeb("Item Catalog Categories", "Attribute Groups", 0)
+Set browserObj= Browser("name:=Attribute Groups")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+wait 5
+CreateAttributes_itemIterator = 1
+Do
+
+	If Ucase(CreateAttributes_Operation) = "ADD" Then
+			
+			Call EnterTextWeb("Attribute Groups", "Value_1", 0, CreateAttributes_AGInternalName)
+			Call ClickButtonWeb("Attribute Groups", "Go", 0)
+			wait 5
+			Call ClickLinkWebWithHtmlid("Attribute Groups", "N3:displayName:0", 0)
+			Set browserObj= Browser("name:=Attribute Group Details")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+			Call ClickButtonWeb("Attribute Group Details", "Add Attribute", 0)
+			
+			Set browserObj= Browser("name:=Create Attribute")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+			Call EnterTextWeb("Create Attribute", "internalName", 0, CreateAttributes_InternalName)
+			Call EnterTextWeb("Create Attribute", "displayName", 0, CreateAttributes_DisplayName)
+			Call EnterTextWeb("Create Attribute", "sequence", 0, CreateAttributes_Sequence)
+			Call EnterTextWeb("Create Attribute", "descriptionTip", 0, CreateAttributes_Tip)
+			Call SelectListWeb("Create Attribute", "dataType", 0, CreateAttributes_DataType)
+			wait 5
+			Call UpdateTextWeb("Create Attribute", "dbColumnLOV", 0, CreateAttributes_Column)
+			wait 5
+			If Ucase(CreateAttributes_Enabled) = "CHECKED" Then
+				Call SelectCheckBoxWeb("Create Attribute", "enabled", "True")
+			ElseIf Ucase(CreateAttributes_Enabled) = "UNCHECKED" Then
+				Call SelectCheckBoxWeb("Create Attribute", "enabled", "False")
+			End If
+			wait 5
+			If Ucase(CreateAttributes_Required) = "CHECKED" Then
+				Call SelectCheckBoxWeb("Create Attribute", "required", "True")
+			ElseIf Ucase(CreateAttributes_Required) = "UNCHECKED" Then
+				Call SelectCheckBoxWeb("Create Attribute", "required", "False")
+			End If
+			Call SelectListWeb("Create Attribute", "displayAs", 0, CreateAttributes_DisplayAs)
+			wait 5
+			If Ucase(CreateAttributes_Indexed) = "CHECKED" Then
+				Call SelectCheckBoxWeb("Create Attribute", "indexed", "True")
+			ElseIf Ucase(CreateAttributes_Indexed) = "UNCHECKED" Then
+				Call SelectCheckBoxWeb("Create Attribute", "indexed", "False")
+			End If
+			wait 5	
+			If Browser("name:=Create Attribute").Page("title:=Create Attribute").WebEdit("name:=defaultValue","index:=0").Exist(3) Then
+				Call UpdateTextWeb("Create Attribute", "defaultValue", 0, CreateAttributes_DefaultValue)
+			End If
+			If Browser("name:=Create Attribute").Page("title:=Create Attribute").WebEdit("name:=valueSetNameLOV","index:=0").Exist(3) Then
+				Call UpdateTextWeb("Create Attribute", "valueSetNameLOV", 0, CreateAttributes_DefaultValue)
+			End If
+			If Browser("name:=Create Attribute").Page("title:=Create Attribute").WebEdit("name:=dynamicUrl","index:=0").Exist(3) Then
+				Call UpdateTextWeb("Create Attribute", "dynamicUrl", 0, CreateAttributes_DefaultValue)
+			End If
+			
+			Call ClickButtonWeb("Create Attribute", "Apply", 0)
+			Set browserObj= Browser("name:=Attribute Group Details")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+	ElseIf Ucase(CreateAttributes_Operation) = "CHANGE" Then
+			Call EnterTextWeb("Attribute Groups", "Value_1", 0, CreateAttributes_AGInternalName)
+			Call ClickButtonWeb("Attribute Groups", "Go", 0)
+			wait 5
+			Call ClickLinkWebWithHtmlid("Attribute Groups", "N3:displayName:0", 0)
+			
+			Set browserObj= Browser("name:=Attribute Group Details")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+			Call ClickImageWebtableRefWebElement("Attribute Group Details","N5:selected:0",0,CreateAttributes_InternalName,3,12)
+			Set browserObj= Browser("name:=Edit Attribute")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+			Call EnterTextWeb("Edit Attribute", "displayName", 0, CreateAttributes_DisplayName)
+			Call EnterTextWeb("Edit Attribute", "sequence", 0, CreateAttributes_Sequence)
+			Call EnterTextWeb("Edit Attribute", "descriptionTip", 0, CreateAttributes_Tip)
+			wait 5
+			If Ucase(CreateAttributes_Enabled) = "CHECKED" Then
+				Call SelectCheckBoxWeb("Edit Attribute", "enabled", "True")
+			ElseIf Ucase(CreateAttributes_Enabled) = "UNCHECKED" Then
+				Call SelectCheckBoxWeb("Edit Attribute", "enabled", "False")
+			End If
+			wait 5
+			If Ucase(CreateAttributes_Required) = "CHECKED" Then
+				Call SelectCheckBoxWeb("Edit Attribute", "required", "True")
+			ElseIf Ucase(CreateAttributes_Required) = "UNCHECKED" Then
+				Call SelectCheckBoxWeb("Edit Attribute", "required", "False")
+			End If
+			Call SelectListWeb("Edit Attribute", "displayAs", 0, CreateAttributes_DisplayAs)
+			wait 5
+			If Ucase(CreateAttributes_Indexed) = "CHECKED" Then
+				Call SelectCheckBoxWeb("Edit Attribute", "indexed", "True")
+			ElseIf Ucase(CreateAttributes_Indexed) = "UNCHECKED" Then
+				Call SelectCheckBoxWeb("Edit Attribute", "indexed", "False")
+			End If
+			wait 5
+			If Browser("name:=Edit Attribute").Page("title:=Edit Attribute").WebEdit("name:=defaultValue","index:=0").Exist(3) Then
+				Call UpdateTextWeb("Edit Attribute", "defaultValue", 0, CreateAttributes_DefaultValue)
+			End If
+			If Browser("name:=Edit Attribute").Page("title:=Edit Attribute").WebEdit("name:=valueSetNameLOV","index:=0").Exist(3) Then
+				Call UpdateTextWeb("Edit Attribute", "valueSetNameLOV", 0, CreateAttributes_DefaultValue)
+			End If
+			If Browser("name:=Edit Attribute").Page("title:=Edit Attribute").WebEdit("name:=dynamicUrl","index:=0").Exist(3) Then
+				Call UpdateTextWeb("Edit Attribute", "dynamicUrl", 0, CreateAttributes_DefaultValue)
+			End If
+			
+			Call ClickButtonWeb("Edit Attribute", "Apply", 0)
+			Set browserObj= Browser("name:=Attribute Group Details")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+	ElseIf Ucase(CreateAttributes_Operation) = "DELETE" Then
+		Call EnterTextWeb("Attribute Groups", "Value_1", 0, CreateAttributes_AGInternalName)
+		Call ClickButtonWeb("Attribute Groups", "Go", 0)
+		wait 5
+		Call ClickLinkWebWithHtmlid("Attribute Groups", "N3:displayName:0", 0)
+		Set browserObj= Browser("name:=Attribute Group Details")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 5
+		checkBoxIndex= GetWebelementIndexFromWebTable("Attribute Group Details","SPAN","N5:attrInternalName:.*",CreateAttributes_InternalName)
+		Call SelectCheckBoxWebWithIndex("Attribute Group Details","N5:selected:"& checkBoxIndex,0,"True")
+		wait 3
+		Call ClickButtonWeb("Attribute Group Details","Delete",0)
+		wait 5
+	End If
+	CreateAttributes_itemIterator = CreateAttributes_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"CreateAttributes",CreateAttributes_itemIterator + 1)
+	wait 5	
+	Call ClickLinkWeb("Attribute Group Details", "Attribute Groups", 0)
+	wait 5
+Loop While CreateAttributes_Phase <> ""
+
+Call ClickLinkWeb("Attribute Groups", "Home", 0)
+Call FinalStatus()
+------------------------------------------------------------------
+
+
+'Create/Change Database Views
+Call StartExecution(InputFilePath,"DatabaseViews",2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", DatabaseViews_ResponsibilityName, 0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", "Setup", 0)
+Call ClickLinkWeb("Oracle Applications Home Page", "Setup Workbench", 0)
+Set browserObj= Browser("name:=Item Catalog Categories")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+'Attribute Groups
+Call ClickLinkWeb("Item Catalog Categories", "Attribute Groups", 0)
+Set browserObj= Browser("name:=Attribute Groups")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+
+DatabaseViews_itemIterator = 1
+Do
+	
+	Call EnterTextWeb("Attribute Groups", "Value_1", 0, DatabaseViews_AGInternalName)
+	Call ClickButtonWeb("Attribute Groups", "Go", 0)
+	wait 5
+	Call SelectCheckBoxWebWithIndex("Attribute Groups", "(.*)?selected.*",0,"True")
+	Call ClickButtonWeb("Attribute Groups", "Generate Database View", 0)
+	Set browserObj= Browser("name:=Generate Database View")
+	Call WaitForObject(browserObj, 700)
+	Set browserObj=Nothing
+	wait 5
+	If UCase(DatabaseViews_Operation) = "ADD" Then
+		Call UpdateTextWeb("Generate Database View", "N3:attributeGroupViewName:0", 0, DatabaseViews_DatabaseViewName)
+	End if
+	Call ClickButtonWeb("Generate Database View", "Apply", 0)
+	Set browserObj= Browser("name:=Attribute Groups")
+	Call WaitForObject(browserObj, 700)
+	Set browserObj=Nothing	
+	wait 5
+	DatabaseViews_itemIterator = DatabaseViews_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"DatabaseViews",DatabaseViews_itemIterator + 1)
+	wait 5		
+Loop While DatabaseViews_Phase <> ""
+
+Call ClickLinkWeb("Attribute Groups", "Home", 0)
+Call FinalStatus()
+
+--------------------------------------------------------------
+
+
+'Create/Change Value Sets
+Call StartExecution(InputFilePath,"ValueSets",2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", ValueSets_ResponsibilityName, 0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", "Setup", 0)
+Call ClickLinkWeb("Oracle Applications Home Page", "Setup Workbench", 0)
+Set browserObj= Browser("name:=Item Catalog Categories")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+'Click Value Sets
+Call ClickLinkWeb("Item Catalog Categories", "Value Sets", 0)
+Set browserObj= Browser("name:=Maintain Value Sets")
+Call WaitForObject(browserObj, 700)
+Set browserObj=Nothing
+
+ValueSets_itemIterator = 1
+Do
+
+	If Ucase(ValueSets_Operation) = "ADD" Then
+		Call ClickButtonWeb("Maintain Value Sets", "Create", 0)
+		Set browserObj= Browser("name:=Value Set")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 5
+		Call EnterTextWeb("Value Set", "EgoValueSetName", 0, ValueSets_ValueSetName)
+		Call EnterTextWeb("Value Set", "EgoDescription", 0, ValueSets_Description)
+		Call SelectListWeb("Value Set", "EgoDataTypePoplist", 0, ValueSets_DataType)
+		wait 5
+		If Ucase(ValueSets_DataType) = "CHAR" or Ucase(ValueSets_DataType) = "NUMBER" Then
+			Call EnterTextWeb("Value Set", "EgoMaximumSize", 0, ValueSets_MaxSize)
+		End If
+		Call SelectListWeb("Value Set", "EgoValidationTypePoplist", 0, ValueSets_ValidationType)
+		wait 5		
+		If  Browser("name:=Value Set").Page("title:=Value Set").WebEdit("name:=EgodispMinimumValue","index:=0").Exist(3) Then 
+			Call EnterTextWeb("Value Set", "EgodispMinimumValue", 0, ValueSets_MinValue)
+		End if
+		wait 5
+		If  Browser("name:=Value Set").Page("title:=Value Set").WebEdit("name:=EgodispMaximumValue","index:=0").Exist(3) Then
+		    Call EnterTextWeb("Value Set", "EgodispMaximumValue", 0, ValueSets_MaxValue)
+		End if
+		wait 5
+		If UCase(ValueSets_DataType) = "CHAR" and UCase(ValueSets_ValidationType) = "INDEPENDENT" Then
+			If ValueSets_DisplayType = "Poplist" Then
+				Call SelectRadioGroupWebOptional("Value Set", "EgoDisplayTypeRG", "X")
+			ElseIf ValueSets_DisplayType = "List of Values" Then
+				Call SelectRadioGroupWebOptional("Value Set", "EgoDisplayTypeRG", "N")
+			End If
+			
+			Call ClickButtonWeb("Value Set", "Apply and Continue", 0)
+			Set browserObj= Browser("name:=Create Value Set Values")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+			Do
+				Call ClickButtonWeb("Create Value Set Values", "Add Another",0)
+				If Dialog("regexpwndtitle:=Message from webpage").Exist(5) Then
+					Dialog("regexpwndtitle:=Message from webpage").WinButton("text:=OK").Click
+				End If
+				wait 5
+				Call EnterTextWeb("Create Value Set Values", "internalName", 0, ValueSets_Value)
+				Call EnterTextWeb("Create Value Set Values", "description", 0, ValueSets_Desc)
+				wait 5
+				If Ucase(ValueSets_Enabled)="CHECKED" Then
+					Call SelectCheckBoxWeb("Create Value Set Values", "enabled", "True")
+				ElseIf Ucase(ValueSets_Enabled)="UNCHECKED" Then
+					Call SelectCheckBoxWeb("Create Value Set Values", "enabled", "False")
+				End If
+				wait 5
+				Call EnterTextWeb("Create Value Set Values", "sequence", 0, ValueSets_Sequence)
+				Call EnterTextWeb("Create Value Set Values", "startDate", 0, ValueSets_StartDate)
+				Call EnterTextWeb("Create Value Set Values", "endDate", 0, ValueSets_EndDate)
+				ValueSets_itemIterator = ValueSets_itemIterator + 1
+				Call GetInputFromExcel(InputFilePath,"ValueSets",ValueSets_itemIterator + 1)
+			Loop until ValueSets_ValueSetName <> ""
+			Call ClickButtonWeb("Create Value Set Values", "Apply", 0)
+			wait 5
+		ElseIf UCase(ValueSets_DataType) = "CHAR" and UCase(ValueSets_ValidationType) = "TRANSLATABLE INDEPENDENT" Then
+			If ValueSets_DisplayType = "Poplist" Then
+				Call SelectRadioGroupWebOptional("Value Set", "EgoDisplayTypeRG", "X")
+			ElseIf ValueSets_DisplayType = "List of Values" Then
+				Call SelectRadioGroupWebOptional("Value Set", "EgoDisplayTypeRG", "N")
+			End If
+			Call ClickButtonWeb("Value Set", "Apply and Continue", 0)
+			Set browserObj= Browser("name:=Create Value Set Values")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+			Do
+				Call ClickButtonWeb("Create Value Set Values", "Add Another",0)
+				If Dialog("regexpwndtitle:=Message from webpage").Exist(5) Then
+					Dialog("regexpwndtitle:=Message from webpage").WinButton("text:=OK").Click
+				End If
+				wait 5
+				Call EnterTextWeb("Create Value Set Values", "internalName", 0, ValueSets_Value)
+				Call EnterTextWeb("Create Value Set Values", "displayName", 0, ValueSets_TranslatedValue)
+				Call EnterTextWeb("Create Value Set Values", "description", 0, ValueSets_Desc)
+				wait 5
+				If Ucase(ValueSets_Enabled)="CHECKED" Then
+					Call SelectCheckBoxWeb("Create Value Set Values", "enabled", "True")
+				ElseIf Ucase(ValueSets_Enabled)="UNCHECKED" Then
+					Call SelectCheckBoxWeb("Create Value Set Values", "enabled", "False")
+				End If
+				Call EnterTextWeb("Create Value Set Values", "sequence", 0, ValueSets_Sequence)
+				Call EnterTextWeb("Create Value Set Values", "startDate", 0, ValueSets_StartDate)
+				Call EnterTextWeb("Create Value Set Values", "endDate", 0, ValueSets_EndDate)
+				ValueSets_itemIterator = ValueSets_itemIterator + 1
+				Call GetInputFromExcel(InputFilePath,"ValueSets",ValueSets_itemIterator + 1)
+			Loop until ValueSets_ValueSetName <> ""
+			Call ClickButtonWeb("Create Value Set Values", "Apply", 0)
+			wait 5
+		ElseIf UCase(ValueSets_DataType) = "CHAR" and UCase(ValueSets_ValidationType) = "TABLE" Then
+			If ValueSets_DisplayType = "Poplist" Then
+				Call SelectRadioGroupWebOptional("Value Set", "EgoDisplayTypeRG", "X")
+			ElseIf ValueSets_DisplayType = "List of Values" Then
+				Call SelectRadioGroupWebOptional("Value Set", "EgoDisplayTypeRG", "N")
+			End If
+			Call ClickButtonWeb("Value Set", "Apply and Continue", 0)
+			Set browserObj= Browser("name:=Create Value Set Values")
+			Call WaitForObject(browserObj, 700)
+			Set browserObj=Nothing
+			wait 5
+			Do
+				Call ClickButtonWeb("Enter Validation Table Information", "Add Another",0)
+				If Dialog("regexpwndtitle:=Message from webpage").Exist(5) Then
+					Dialog("regexpwndtitle:=Message from webpage").WinButton("text:=OK").Click
+				End If
+				wait 5
+				Call UpdateTextWeb("Enter Validation Table Information", "EgoApplicatonNameLov", 0, ValueSets_ApplicationName)
+				Call EnterTextWeb("Enter Validation Table Information", "EgoTableName", 0, ValueSets_TableName)
+				Call EnterTextWeb("Enter Validation Table Information", "EgoVCName", 0, ValueSets_ValueColumnName) 
+				Call SelectListWeb("Enter Validation Table Information", "EgoVCType", 0, ValueSets_ValueColumnType)
+				wait 5
+				Call EnterTextWeb("Enter Validation Table Information", "EgoVCSize", 0, ValueSets_ValueColumnSize) 
+				Call EnterTextWeb("Enter Validation Table Information", "EgoMCName", 0, ValueSets_MeaningColumnName) 
+				Call SelectListWeb("Enter Validation Table Information", "EgoMCType", 0, ValueSets_MeaningColumnType)
+				wait 5
+				Call EnterTextWeb("Enter Validation Table Information", "EgoMCSize", 0, ValueSets_MeaningColumnSize)
+				Call EnterTextWeb("Enter Validation Table Information", "EgoIDName", 0, ValueSets_IDColumnName) 
+				Call SelectListWeb("Enter Validation Table Information", "EgoIDType", 0, ValueSets_IDColumnType)
+				wait 5
+				Call EnterTextWeb("Enter Validation Table Information", "EgoIDSize", 0, ValueSets_IDColumnSize)
+				Call EnterTextWeb("Enter Validation Table Information", "EgoWCText", 0, ValueSets_WhereClause)
+				ValueSets_itemIterator = ValueSets_itemIterator + 1
+				Call GetInputFromExcel(InputFilePath,"ValueSets",ValueSets_itemIterator + 1)
+			Loop until ValueSets_ValueSetName <> ""
+			Call ClickButtonWeb("Enter Validation Table Information", "Apply", 0)
+			wait 5
+		Else 		
+			Call ClickButtonWeb("Value Set", "Apply", 0)					
+		End If
+		
+		Set browserObj= Browser("name:=Value Set Details")
+		Call WaitForObject(browserObj, 700)
+		Set browserObj=Nothing
+		wait 5	
+		Call ClickLinkWeb("Value Set Details", "Value Sets", 0)
+		wait 5
+	ElseIf Ucase(ValueSets_Operation) = "CHANGE" Then
+		Call EnterTextWeb("Maintain Value Sets","NameField",0,ValueSets_ValueSetName)
+		Call ClickButtonWeb("Maintain Value Sets","Go",0)
+		wait 5
+		Call ClickLinkWeb("Maintain Value Sets",ValueSets_ValueSetName,0)
+		wait 5
+		Call ClickButtonWeb("Value Set Details","Create",0)
+		wait 5
+		Call EnterTextWeb("Create Value Set Values", "internalName", 0, ValueSets_Value)
+		Call EnterTextWeb("Create Value Set Values", "description", 0, ValueSets_Desc)
+		wait 5
+		If Ucase(ValueSets_Enabled)="CHECKED" Then
+			Call SelectCheckBoxWeb("Create Value Set Values", "enabled", "True")
+		ElseIf Ucase(ValueSets_Enabled)="UNCHECKED" Then
+			Call SelectCheckBoxWeb("Create Value Set Values", "enabled", "False")
+		End If
+		Call EnterTextWeb("Create Value Set Values", "sequence", 0, ValueSets_Sequence)
+		Call EnterTextWeb("Create Value Set Values", "startDate", 0, ValueSets_StartDate)
+		Call EnterTextWeb("Create Value Set Values", "endDate", 0, ValueSets_EndDate)
+		Call ClickButtonWeb("Create Value Set Values", "Apply", 0)
+		wait 5
+		Call ClickLinkWeb("Value Set Details", "Value Sets", 0)
+		wait 5
+		ValueSets_itemIterator = ValueSets_itemIterator + 1
+		Call GetInputFromExcel(InputFilePath,"ValueSets",ValueSets_itemIterator + 1)
+	End If	
+Loop While ValueSets_Phase <> ""
+
+Call ClickLinkWeb("Maintain Value Sets", "Home", 0)
+Call FinalStatus()
+
+

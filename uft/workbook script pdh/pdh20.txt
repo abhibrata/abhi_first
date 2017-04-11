@@ -1,0 +1,462 @@
+categoriseMHE::
+
+
+Call StartExecution(InputFilePath, "CategoriesMHEView", 2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",CategoriesMHEView_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog", 2)
+Call ClickLinkWeb("Oracle Applications Home Page","Item Simple Search",2)
+wait 5
+Call EnterTextWeb("Item Simple Search", "searchField", 0, "0072376643")
+Call ClickButtonWeb("Item Simple Search","Search", 0)
+wait 5
+Call ClickLinkWeb("Search Results", "0072376643", 0)
+wait 4
+
+Call ClickLinkWeb("Overview","Classification and Categories",0)
+wait 4
+Call ClickLinkWeb("Classification and Categories", "Personalize Page", 0)
+wait 4
+CategoriesMHEView_itemIterator = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy", "Select to collapse", 0, CategoriesMHEView_Property ,2, 5)
+	wait 4
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0,CategoriesMHEView_Property, 1, 3, CategoriesMHEView_Site)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0, CategoriesMHEView_Property, 1, 4, CategoriesMHEView_OrganizationPIMDH)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0, CategoriesMHEView_Property, 1, 5, CategoriesMHEView_MHEView)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply", 0)
+	CategoriesMHEView_itemIterator = CategoriesMHEView_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"CategoriesMHEView",CategoriesMHEView_itemIterator + 1)
+	wait 4
+Loop While CategoriesMHEView_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+Call FinalStatus()
+-------------------------------------------------------------------------
+
+classification and categorize::
+
+
+Call StartExecution(InputFilePath, "ClassificationAndCategories", 2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",ClassificationAndCategories_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog",1)
+Call ClickLinkWeb("Oracle Applications Home Page","Item Simple Search",1)
+wait 5
+Call EnterTextWeb("Item Simple Search", "searchField", 0, "0072376643")
+Call ClickButtonWeb("Item Simple Search","Search", 0)
+wait 5
+Call ClickLinkWeb("Search Results", "0072376643", 0)
+wait 4
+call ClickLinkWeb("Overview", "Classification and Categories", 0)
+wait 4
+Call ClickLinkWeb("Classification and Categories", "Personalize Page", 0)
+wait 4
+ClassificationAndCategories_itemIterator = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy", "Select to collapse", 0, ClassificationAndCategories_Name ,2, 5)
+	wait 4
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0, ClassificationAndCategories_Property, 1, 3, ClassificationAndCategories_Site)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0,ClassificationAndCategories_Property, 1, 4, ClassificationAndCategories_OrganizationPIMDH)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0, ClassificationAndCategories_Property, 1, 5, ClassificationAndCategories_MHEUser)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply", 0)
+	ClassificationAndCategories_itemIterator = ClassificationAndCategories_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"ClassificationAndCategories",ClassificationAndCategories_itemIterator + 1)
+	wait 4
+Loop While ClassificationAndCategories_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+Call FinalStatus()
+
+------------------------------------------------------------------
+
+icc change::
+
+
+Call StartExecution(InputFilePath,"ICCChange",2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",ICCChange_ResponsibilityName,0)
+Call ClickLinkWeb("Oracle Applications Home Page", "Change Organization", 0)
+wait 5
+Call ClickImageWeb("Organization Setup", "Quick Select", 0)
+wait 3
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Item Simple Search",0)
+wait 5
+Call EnterTextWeb("Item Simple Search", "searchField", 0, "0072376643")
+Call ClickButtonWeb("Item Simple Search", "Search", 0)
+wait 5
+Call ClickLinkWeb("Search Results", "0072376643", 0)
+wait 4
+Call SelectListWeb("Overview", "EgoItemActionPopList", 0, "Change Item Catalog Category")
+Call ClickButtonWeb("Overview", "Go",2)
+wait 4
+Call UpdateTextWeb("Change Item Catalog Category", "EgoItemCatalogGroupName", 0, "CN-Shared-Component-Plan-Items")
+Call ClickButtonWeb("Change Item Catalog Category", "Go", 0)
+wait 3
+Call ClickLinkWeb("Change Item Catalog Category", "Personalize Page", 0)
+wait 4
+ICCChange_itemIterator1 = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy" , "Select to collapse", 0 ,ICCChange_Name,2,5)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, ICCChange_Property, 1, 3, ICCChange_FunctionEGOUnrestricted)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, ICCChange_Property, 1, 4, ICCChange_Site)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, ICCChange_Property, 1, 5, ICCChange_OrganizationPIMDH)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, ICCChange_Property, 1, 6, ICCChange_ResponsibilityDevelopmentManager)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply", 0)
+	ICCChange_itemIterator1 = ICCChange_itemIterator1 + 1
+	Call GetInputFromExcel(InputFilePath,"ICCChange",ICCChange_itemIterator1 + 1)
+	wait 4
+Loop While ICCChange_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy","Item", 0)
+wait 3
+Call SelectListWeb("Overview", "EgoItemActionPopList", 0, "Change Item Catalog Category")
+Call ClickButtonWeb("Overview", "Go",2)
+wait 4
+Call UpdateTextWeb("Change Item Catalog Category", "EgoItemCatalogGroupName", 0, "MHHE-Digital-HWM")
+Call ClickButtonWeb("Change Item Catalog Category", "Go", 0)
+wait 3
+Call SelectListWeb("Change Item Catalog Category", "EgoInputLifecycleAttr", 0, "Attribute LifeCycle")
+wait 3
+Call SelectListWeb("Change Item Catalog Category", "EgoInputLifecyclePhaseAttr", 0, "Active Phase")
+wait 3
+Call UpdateTextWeb("Change Item Catalog Category", "EgoInputItemStatusAttrTL", 0, "Active")
+Call ClickButtonWeb("Change Item Catalog Category","Continue", 0)
+wait 3
+Call ClickLinkWeb("Change Item Catalog Category", "Personalize Page", 0)
+wait 3
+Call GetInputFromExcel(InputFilePath,"ICCChange",2)
+ICCChange_itemIterator2 = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy" , "Select to collapse", 0 ,ICCChange_Name,2,5)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:functionText:0", 0, ICCChange_Property, 1, 3, ICCChange_FunctionEGOUnrestricted)
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:functionText:0", 0,ICCChange_Property, 1, 4, ICCChange_Site)
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:functionText:0", 0, ICCChange_Property, 1, 5, ICCChange_OrganizationPIMDH)
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:functionText:0", 0, ICCChange_Property, 1, 6, ICCChange_ResponsibilityDevelopmentManager)
+	Call ClickButtonWeb("Personalize.*", "Apply", 0)
+	ICCChange_itemIterator2 = ICCChange_itemIterator2 + 1
+	Call GetInputFromExcel(InputFilePath,"ICCChange",ICCChange_itemIterator2 + 1)
+	wait 4
+Loop While ICCChange_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+Call FinalStatus()
+
+-----------------------------------------------------------------
+
+item relationships::
+
+Call StartExecution(InputFilePath, "ItemRelationships", 2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",ItemRelationships_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Item Simple Search",0)
+wait 5
+Call EnterTextWeb("Item Simple Search", "searchField", 0, "0072376643")
+Call ClickButtonWeb("Item Simple Search","Search", 0)
+wait 5
+Call ClickLinkWeb("Search Results", "0072376643", 0)
+wait 4
+Call ClickLinkWeb("Overview", "Associations", 0)
+wait 4
+Call ClickLinkWeb("Cross References", "Personalize Page", 0)
+wait 4
+ItemRelationships_itemIterator = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy", "Select to collapse", 0, ItemRelationships_Name,2, 5)
+	wait 5
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, ItemRelationships_Property, 1, 3, ItemRelationships_ItemManagement)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, ItemRelationships_Property, 1, 4, ItemRelationships_Site)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, ItemRelationships_Property, 1, 5, ItemRelationships_OrganizationPIM)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, ItemRelationships_Property, 1, 6, ItemRelationships_MHEUser)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply",0)
+	ItemRelationships_itemIterator = ItemRelationships_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"ItemRelationships",ItemRelationships_itemIterator + 1)
+	wait 5
+Loop While ItemRelationships_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+Call FinalStatus()
+
+------------------------------------------------------------
+life cycle phase::
+
+
+
+Call StartExecution(InputFilePath,"LifecycleandPhases",2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",LifecycleandPhases_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Create Engineering Items",0)
+wait 5
+Call EnterTextWeb("Create Item", "EgoItemCatalogCategory", 0, "MHHE-Print-Content")
+Call ClickButtonWeb("Create Item", "Continue", 0)
+wait 5
+Call ClickLinkWeb("Create Item Basic Information", "Personalize Page", 0)
+wait 4
+LifecycleandPhases_itemIterator = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy", "Select to collapse", 0, LifecycleandPhases_Name,2, 5)
+	wait 4
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0, LifecycleandPhases_Property, 1, 3, LifecycleandPhases_Site)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0, LifecycleandPhases_Property, 1, 4, LifecycleandPhases_OrganizationItemMaster)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0, LifecycleandPhases_Property, 1, 5, LifecycleandPhases_ResponsibilityManager)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply",0)
+	LifecycleandPhases_itemIterator = LifecycleandPhases_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"LifecycleandPhases",LifecycleandPhases_itemIterator + 1)
+	wait 5
+Loop While LifecycleandPhases_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+Call FinalStatus()
+==============================================================
+
+
+organisationMHE view::
+
+
+
+Call StartExecution(InputFilePath, "OrganizationsMHEView", 2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",OrganizationsMHEView_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog", 2)
+Call ClickLinkWeb("Oracle Applications Home Page","Item Simple Search",2)
+wait 5
+Call EnterTextWeb("Item Simple Search", "searchField", 0, "0072376643")
+Call ClickButtonWeb("Item Simple Search","Search", 0)
+wait 5
+Call ClickLinkWeb("Search Results", "0072376643", 0)
+wait 4
+Call ClickLinkWeb("Overview","Organizations",0)
+wait 4
+Call ClickLinkWeb("Organization Assignments", "Personalize Page", 0)
+wait 4
+OrganizationsMHEView_itemIterator = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy", "Select to collapse", 0, OrganizationsMHEView_Property ,2, 5)
+	wait 4
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, OrganizationsMHEView_Property, 1, 3, OrganizationsMHEView_FunctionItemManagement)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, OrganizationsMHEView_Property, 1, 4, OrganizationsMHEView_Site)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, OrganizationsMHEView_Property, 1, 5, OrganizationsMHEView_OrganizationPIMDH)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, OrganizationsMHEView_Property, 1, 6, OrganizationsMHEView_MHEView)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply", 0)
+	OrganizationsMHEView_itemIterator = OrganizationsMHEView_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"OrganizationsMHEView",OrganizationsMHEView_itemIterator + 1)
+	wait 4
+Loop While OrganizationsMHEView_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+Call FinalStatus()
+--------------------------------------------------------------------
+
+organisation tab::
+
+
+
+Call StartExecution(InputFilePath,"OrganizationsTab",2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",OrganizationsTab_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Item Simple Search",0)
+wait 5
+Call EnterTextWeb("Item Simple Search", "searchField", 0, "0072376643")
+Call ClickButtonWeb("Item Simple Search","Search", 0)
+wait 5
+Call ClickLinkWeb("Search Results", "0072376643", 0)
+wait 4
+Call ClickLinkWeb("Overview", "Organizations", 0)
+wait 3
+Call ClickLinkWeb("Organization Assignments", "Personalize Page", 0)
+wait 4
+OrganizationsTab_itemIterator = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy", "Select to collapse", 0, OrganizationsTab_Name,2, 5)
+	wait 4
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, OrganizationsTab_Property, 1, 3, OrganizationsTab_ItemManagement)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, OrganizationsTab_Property, 1, 4, OrganizationsTab_Site)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, OrganizationsTab_Property, 1, 5, OrganizationsTab_OrganizationPIM)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:function.*", 0, OrganizationsTab_Property, 1, 6, OrganizationsTab_MHEUser)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply",0)
+	OrganizationsTab_itemIterator = OrganizationsTab_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"OrganizationsTab",OrganizationsTab_itemIterator + 1)
+	wait 5
+Loop While OrganizationsTab_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+Call FinalStatus()
+
+---------------------------------------------------------
+
+profile option::
+
+
+
+
+Call StartExecution(InputFilePath,"ProfileOptions",2)
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",ProfileOptions_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Profile",0)
+Call ClickLinkWeb("Oracle Applications Home Page","System",0)
+Call waitUntilFormExist("Find System Profile Values")
+Call CloseForm("Find System Profile Values")
+ProfileOptions_itemIterator = 1
+Do
+	Call SelectFromNavigator("Profile:System")
+	If Ucase(ProfileOptions_AccessSite) = "CHECKED" Then
+		Call SelectCheckBox("Find System Profile Values","Site","True")
+	ElseIf Ucase(ProfileOptions_AccessSite) = "UNCHECKED" Then
+		Call SelectCheckBox("Find System Profile Values","Site","False")
+	End If
+	If ProfileOptions_AccessApplication <> "" Then
+		Call SelectCheckBox("Find System Profile Values","Application","True")
+		Call EnterTextForm("Find System Profile Values","Application Name", 0,ProfileOptions_AccessApplication)
+	End If
+	If ProfileOptions_AccessResponsibility <> "" Then
+		Call SelectCheckBox("Find System Profile Values","Responsibility","True")
+		Call EnterTextForm("Find System Profile Values","Responsibility Name",0, ProfileOptions_AccessResponsibility)
+	End If
+	If ProfileOptions_AccessUser <> "" Then
+		Call SelectCheckBox("Find System Profile Values","User","True")
+		Call EnterTextForm("Find System Profile Values","User Name",0,ProfileOptions_AccessUser)
+	End If
+	If ProfileOptions_AccessOrganization <> "" Then
+		Call SelectCheckBox("Find System Profile Values","Organization","True")
+		Call EnterTextForm("Find System Profile Values","Organization  Name", 0,ProfileOptions_AccessOrganization)
+	End If
+	If ProfileOptions_AccessServer <> "" Then
+		Call SelectCheckBox("Find System Profile Values","Server","True")
+		Call EnterTextForm("Find System Profile Values","Server Name", 0,ProfileOptions_AccessServer)
+	End If
+	If Ucase(ProfileOptions_ProfileNoValues) = "CHECKED" Then
+		Call SelectCheckBox("Find System Profile Values","Profiles with No Values","True")
+	ElseIf Ucase(ProfileOptions_ProfileNoValues) = "UNCHECKED" Then
+		Call SelectCheckBox("Find System Profile Values","Profiles with No Values","False")
+	End If
+	Call EnterTextForm("Find System Profile Values","Profile", 0, ProfileOptions_Name)
+	Call ClickButton("Find System Profile Values","Find")
+	Call EnterTextTable("System Profile Values","PROFILE_VALUES",1,"User","Yes")
+	Call SelectMenu("System Profile Values","File->Save")
+	Call CloseForm("System Profile Values")
+	ProfileOptions_itemIterator = ProfileOptions_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"ProfileOptions",ProfileOptions_itemIterator + 1)
+Loop While ProfileOptions_Phase <> ""
+
+Call SelectMenu ("Navigator","File->Exit Oracle Applications")
+Call ClickNotificationButton ("Caution","OK")
+Call CloseBrowser ("Oracle Applications R12*")
+'Call ClickLinkWeb ("Oracle Applications Home Page","Logout","0")
+'wait 5
+'Call CloseBrowser ("Login.*")
+Call FinalStatus()
+
+-------------------------------------------------------
+
+related items::
+
+
+
+Call StartExecution(InputFilePath, "RelatedItemsMHEView", 2)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",RelatedItemsMHEView_ResponsibilityName,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog", 2)
+Call ClickLinkWeb("Oracle Applications Home Page","Item Simple Search",2)
+wait 5
+Call EnterTextWeb("Item Simple Search", "searchField", 0, "0072376643")
+Call ClickButtonWeb("Item Simple Search","Search", 0)
+wait 5
+Call ClickLinkWeb("Search Results", "0072376643", 0)
+wait 4
+
+Call ClickLinkWeb("Overview","Associations",0)
+wait 4
+Call ClickLinkWeb("Cross References", "Related Items", 0)
+wait 4
+Call ClickLinkWeb("Related Items", "Personalize Page", 0)
+wait 4
+RelatedItemsMHEView_itemIterator = 1
+Do
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy", "Select to collapse", 0, RelatedItemsMHEView_Property ,2, 5)
+	wait 4
+	Call EnterTextWebtableRefWebElement("Personalize.*", "N3:function.*", 0, RelatedItemsMHEView_Property, 1, 3, RelatedItemsMHEView_FunctionItem)
+	wait 3
+	Call EnterTextWebtableRefWebElement("Personalize.*", "N3:function.*", 0, RelatedItemsMHEView_Property, 1, 4, RelatedItemsMHEView_Site)
+	wait 3
+	Call EnterTextWebtableRefWebElement("Personalize.*", "N3:function.*", 0, RelatedItemsMHEView_Property, 1, 5, RelatedItemsMHEView_OrganizationPIMDH)
+	wait 3
+	Call EnterTextWebtableRefWebElement("Personalize.*", "N3:function.*", 0, RelatedItemsMHEView_Property, 1, 6, RelatedItemsMHEView_MHEView)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply", 0)
+	RelatedItemsMHEView_itemIterator = RelatedItemsMHEView_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"RelatedItemsMHEView",RelatedItemsMHEView_itemIterator + 1)
+	wait 4
+Loop While RelatedItemsMHEView_Phase <> ""
+Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+Call FinalStatus()
+----------------------------------------------------------------
+
+search assoc:::
+
+
+Call StartExecution(InputFilePath, "SearchAssocMHEView", 2)
+SearchAssocMHEView_itemIterator = 1
+Do
+	Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",SearchAssocMHEView_ResponsibilityName,0)
+	Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Item Catalog", 2)
+	Call ClickLinkWeb("Oracle Applications Home Page","Search Associations",2)
+	wait 5
+	Call SelectListWeb("Search Associations","EgoItemAssocChoice" ,0, SearchAssocMHEView_SearchDropdown)
+	Call ClickButtonWeb("Search Associations", "Go", 0)
+	wait 3
+	Call ClickLinkWeb("Search Associations","Personalize Advanced Search.*", 0)
+	wait 3
+	Call ClickLinkWeb("Personalize Page Hierarchy", "Go", 0)
+	wait 4
+	Call ClickImageWebtableRefWebElement("Personalize Page Hierarchy","Personalize",1,SearchAssocMHEView_Name,1,5)
+	wait 4
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0,SearchAssocMHEView_Property, 1, 3, SearchAssocMHEView_Site)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0,SearchAssocMHEView_Property, 1, 4, SearchAssocMHEView_OrganizationMHE)
+	wait 3
+	Call SelectListWebtableRefWebElement("Personalize.*", "N3:site.*", 0,SearchAssocMHEView_Property, 1, 5, SearchAssocMHEView_MHEView)
+	wait 3
+	Call ClickButtonWeb("Personalize.*", "Apply", 0)
+	wait 4
+	Call ClickLinkWeb("Personalize Page Hierarchy", "Home", 0)
+	SearchAssocMHEView_itemIterator = SearchAssocMHEView_itemIterator + 1
+	Call GetInputFromExcel(InputFilePath,"SearchAssocMHEView",SearchAssocMHEView_itemIterator + 1)
+Loop While SearchAssocMHEView_Phase <> ""
+Call ClickLinkWeb ("Oracle Applications Home Page","Logout","0")
+wait 5
+Call CloseBrowser ("Login.*")
+Call FinalStatus()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

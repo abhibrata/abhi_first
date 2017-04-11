@@ -1,0 +1,103 @@
+tab1::
+------------------------------------------
+
+
+InputFilePath = "C:\Users\1196305\Desktop\Agile\Documents\newpdh1.xls"
+
+Call StartExecution(InputFilePath,"AddSetValue",2)
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",Resp,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Application",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Menu",0)
+
+Call waitUntilFormExist("Menus.*")
+
+i=2
+Call GetInputFromExcel(InputFilePath,"AddSetValue",i)
+
+Do
+
+	Call EnterTextForm("Menus","Menu",0,Menu)
+	Call EnterTextForm("Menus","User Menu Name",0,User_menu_Name)
+	Call EnterTextForm("Menus","Menu Type",0,Menu_type)
+	Call EnterTextForm("Menus","Description",0,Description1)
+	j=2
+	Call GetInputFromExcel(InputFilePath,"AddSetValue",j)
+	Do
+	
+		Call EnterTextTable("Menus","FND_MENU_ENTRIES",1,"Seq",Seq)
+		Call EnterTextTable("Menus","FND_MENU_ENTRIES",1,"  Prompt",Prompt)
+		Call EnterTextTable("Menus","FND_MENU_ENTRIES",1,"Submenu",Submenu)
+		Call EnterTextTable("Menus","FND_MENU_ENTRIES",1,"Function",Function1)
+		Call EnterTextTable("Menus","FND_MENU_ENTRIES",1,"Description",Description11)
+	
+		If Ucase(Grant1) = "CHECKED" Then
+			Call EnterTextTable("Menus","FND_MENU_ENTRIES",1,"Grant",false)
+		ElseIf Ucase(Grant1) = "UNCHECKED" or Ucase(Grant1) = "NOT CHECKED" or Ucase(Grant1) = " " Then
+			Call EnterTextTable("Menus","FND_MENU_ENTRIES",1,"Grant",false)
+		End If
+	j=j+1
+	Call GetInputFromExcel(InputFilePath,"AddSetValue",j)
+	
+	Loop while seq <> ""
+	Call SelectMenu("Menus","File->Save and Proceed")
+	i=i+1
+	Call GetInputFromExcel(InputFilePath,"AddSetValue",i)
+Loop while Menu <> ""
+
+Call CloseForm("Menus")
+Call SelectMenu ("Navigator","File->Exit Oracle Applications")
+Call ClickNotificationButton ("Caution","OK")
+Call CloseBrowser ("Oracle Applications R12*")
+
+Call ClickLinkWeb ("Oracle Applications Home Page","Logout","0")
+wait 5
+Call CloseBrowser ("Login.*")
+Call FinalStatus()
+
+Call ResultZipFile_Upload (gstrScenarioResultFolder)
+Call RemoveUserEnvironmentVariable ("e_Swift_SingleReportFolderPath")
+
+---------------------------------------------------
+
+tab2::
+
+InputFilePath = "C:\Users\1196305\Desktop\Agile\Documents\pdh1_tab2.xls"
+
+Call StartExecution(InputFilePath,"AddSetValue",2)
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page",Resp,0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Security",0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Responsibility",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Request",0)
+
+Call waitUntilFormExist("Request Groups.*")
+i=2
+Call GetInputFromExcel(InputFilePath,"AddSetValue",i)
+
+Do
+
+	Call EnterTextForm("Request Groups","Group",0,Group)
+	Call EnterTextForm("Request Groups","Application",0,Application)
+	Call EnterTextForm("Request Groups","Code",0,Code)
+	'Call EnterTextForm("Request Groups","Description",0,Descriptionb)
+	Call EnterTextTable("Request Groups","PROGRAMS",1,"Type",Typ)
+	Call EnterTextTable("Request Groups","PROGRAMS",1,"Name",Name)
+	
+	Call SelectMenu("Request Groups","File->Save and Proceed")
+	
+	Call GetInputFromExcel(InputFilePath,"AddSetValue",i+1)
+	
+Loop while Application <> ""
+
+Call CloseForm("Request Groups")
+Call SelectMenu ("Navigator","File->Exit Oracle Applications")
+Call ClickNotificationButton ("Caution","OK")
+Call CloseBrowser ("Oracle Applications R12*")
+Call ClickLinkWeb ("Oracle Applications Home Page","Logout","0")
+wait 5
+Call CloseBrowser ("Login.*")
+Call FinalStatus()
+
+Call ResultZipFile_Upload (gstrScenarioResultFolder)
+Call RemoveUserEnvironmentVariable ("e_Swift_SingleReportFolderPath")

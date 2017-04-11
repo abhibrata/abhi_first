@@ -1,0 +1,121 @@
+'Create Employee
+Call StartExecution(InputFilePath, "CreateEmployee", 2)
+Call LoginOracleApplicationWeb(ApplicationURL, UserName, Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", CreateEmployee_ResponsibilityName, 0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page", "People", 0)
+Call ClickLinkWeb("Oracle Applications Home Page", "Enter and Maintain", 0)
+Wait 10
+If JavaWindow("tagname:=PluginEmbeddedFrame","developer name:=frame0").JavaDialog("label:=Security Warning").Exist(20) Then
+	JavaWindow("tagname:=PluginEmbeddedFrame","developer name:=frame0").JavaDialog("label:=Security Warning").JavaCheckBox("label:=I accept the risk and.*").Set "ON"
+	wait 5
+	JavaWindow("tagname:=PluginEmbeddedFrame","developer name:=frame0").JavaDialog("label:=Security Warning").JavaButton("label:=Run","index:=0").Click
+End If
+Call waitUntilFormExist("Find Person")
+Call ClickButton("Find Person", "New")
+CreateEmployee_itemIterator = 1
+Do
+	If Ucase(CreateEmployee_Operation)="ADD" Then
+		Call EnterTextForm("People", "Name: Last", 0, CreateEmployee_LastName)
+		Call EnterTextForm("People", "Name: First", 0, CreateEmployee_FirstName)
+'		Call EnterTextForm("People", "Name: Title", 0, CreateEmployee_Title)
+'		Call EnterTextForm("People", "Name: Prefix", 0, CreateEmployee_Prefix)
+'		Call EnterTextForm("People", "Name: Suffix", 0, CreateEmployee_Suffix)
+'		Call EnterTextForm("People", "Name: Middle", 0, CreateEmployee_Middle)
+		Call SelectList("People", "Gender", CreateEmployee_Gender)
+		Call SelectList("People", "Action", CreateEmployee_Action)
+'		Call EnterTextForm("People", "Social Security", 0, CreateEmployee_SocialSecurity)
+		Call SetFocusTabbedRegion("People", "Personal", 0, "Birth Date", 0)
+		Call EnterTextTabbedRegion("People", "Personal", 0, "Birth Date", 0, CreateEmployee_DateOfBirth)
+		Call SelectMenu("People", "File->Save")
+		If OracleNotification("title:=Note").Exist(5) Then
+			Call ClickNotificationButton("Note","OK")
+		End If
+		CreateEmployee_itemIterator = CreateEmployee_itemIterator+1
+		Call GetInputFromExcel(InputFilePath, "CreateEmployee", CreateEmployee_itemIterator+1)
+		Call SelectMenu("People", "File->New")
+	End If
+Loop while CreateEmployee_Phase <> ""
+
+Call CloseForm("People")
+Call FinalStatus()
+
+----------------------------------------------------
+
+'Create Users
+Call StartExecution(InputFilePath, "CreateUsers", 2)
+Call SwitchResponsibility(CreateUsers_ResponsibilityName)
+Call SelectFromNavigator("Security:User:Define")
+CreateUsers_itemIterator1 =1
+Do
+	If UCase(CreateUsers_Operation)="ADD" Then
+		Call EnterTextForm("Users", "User Name", 0, CreateUsers_UserName)
+		Call EnterTextForm("Users", "Password", 0, CreateUsers_Password)
+		Call EnterTextForm("Users", "Password", 0, CreateUsers_Password)
+		Call EnterTextForm("Users", "Description", 0, CreateUsers_Description)
+		If CreateUsers_PasswordExpirationDays <> "" Then
+			Call SelectRadioButton("Users", "USER_PASSWORD_EXPIRATION_TYPE", "Days")
+			Call EnterTextForm("Users", "Password Expiration: Days", 0, CreateUsers_PasswordExpirationDays)
+		Elseif CreateUsers_PasswordExpirationAccesses <> "" Then
+			Call SelectRadioButton("Users", "USER_PASSWORD_EXPIRATION_TYPE", "Accesses")
+			Call EnterTextForm("Users", "Password Expiration: Accesses", 0, CreateUsers_PasswordExpirationAccesses)
+		Elseif CreateUsers_PasswordExpirationNone <> "" Then
+			Call SelectRadioButton("Users", "USER_PASSWORD_EXPIRATION_TYPE", "None")
+		End If
+		Call EnterTextForm("Users", "Person", 0, CreateUsers_Person)
+		If OracleNotification("title:=Caution").Exist(5) Then
+			Call ClickNotificationButton("Caution","OK")
+		End If
+		Call EnterTextForm("Users", "Customer", 0, CreateUsers_Customer)
+		Call EnterTextForm("Users", "Supplier", 0, CreateUsers_Supplier)
+		Call EnterTextForm("Users", "E-Mail", 0, CreateUsers_Email)
+		Call EnterTextForm("Users", "Fax", 0, CreateUsers_Fax)
+		Call EnterTextForm("Users", "Effective Dates: From", 0, CreateUsers_EffectiveDateFrom)
+		Call EnterTextForm("Users", "Effective Dates: To", 0, CreateUsers_EffectiveDateTo)
+		CreateUsers_itemIterator2 = 1
+		Do
+			'Direct Responsibilities
+			Call SelectTab("Users", "Direct Responsibilities")
+			Call SetFocusTabbedRegionTable("Users", "Direct Responsibilities", "USER_RESP", CreateUsers_itemIterator2, "Responsibility")
+			Call EnterTextTabbedRegionTable("Users", "Direct Responsibilities", 0, "USER_RESP", CreateUsers_itemIterator2, "Responsibility", CreateUsers_DirectResponsibility)
+			Call EnterTextTabbedRegionTable("Users", "Direct Responsibilities", 0, "USER_RESP", CreateUsers_itemIterator2, "Description", CreateUsers_Description)
+			Call EnterTextTabbedRegionTable("Users", "Direct Responsibilities", 0, "USER_RESP", CreateUsers_itemIterator2, "From", CreateUsers_DirectEffectiveDateFr)
+			Call EnterTextTabbedRegionTable("Users", "Direct Responsibilities", 0, "USER_RESP", CreateUsers_itemIterator2, "To", CreateUsers_DirectEffectiveDateTo)
+			'Indirect Responsibilities
+			If CreateUsers_IndirectResponsibility <> "" Then
+				Call SelectTab("Users", "Indirect Responsibilities")
+				Call SetFocusTabbedRegionTable("Users", "Indirect Responsibilities", "USER_RESP_INDIR", CreateUsers_itemIterator2, "Responsibility")
+				Call EnterTextTabbedRegionTable("Users", "Indirect Responsibilities", 0, "USER_RESP_INDIR", CreateUsers_itemIterator2, "Responsibility", CreateUsers_IndirectResponsibility)
+			End If
+			'Securing Attributes
+			If CreateUsers_Attribute <> "" Then
+				Call SelectTab("Users", "Securing Attributes")
+				Call SetFocusTabbedRegionTable("Users", "Securing Attributes", "ATTR", CreateUsers_itemIterator2, "Attribute")
+				Call EnterTextTabbedRegionTable("Users", "Securing Attributes", 0, "ATTR", CreateUsers_itemIterator2, "Attribute", CreateUsers_Attribute)
+				Call EnterTextTabbedRegionTable("Users", "Securing Attributes", 0, "ATTR", CreateUsers_itemIterator2, "Value", CreateUsers_AttributeValue)
+			End If	
+			
+			CreateUsers_itemIterator2 = CreateUsers_itemIterator2+1
+			CreateUsers_itemIterator1 = CreateUsers_itemIterator1+1
+			Call GetInputFromExcel(InputFilePath, "CreateUsers", CreateUsers_itemIterator1+1)	
+			If CreateUsers_DirectResponsibility <> "" Then
+				wait 1
+			Else 
+				Exit do
+			End If			
+		Loop Until CreateUsers_UserName <> ""
+		Call SelectMenu("Users", "File->Save")
+		Call SetFocusForm("Users", "USER_USER_NAME_0")
+		Call SelectMenu("Users", "File->New")		
+	End If
+Loop while CreateUsers_Phase <> ""
+
+Call CloseForm("Users")
+Call SelectMenu("Navigator", "File->Exit Oracle Applications")
+Call ClickNotificationButton("Caution", "OK")
+Call CloseBrowser ("Oracle Applications R12.*")
+wait 5
+Call ClickLinkWeb("Oracle Applications Home Page", "Logout", 0)
+Call CloseBrowser("Login.*")
+Call FinalStatus()
+
+

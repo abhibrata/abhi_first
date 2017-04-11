@@ -1,0 +1,91 @@
+InputFilePath = "C:\Oracle_e-Swift\Input\PDH22_Messages.xls"
+
+Call StartExecution(InputFilePath,"Message",2)
+Call LoginOracleApplicationWeb(ApplicationURL,UserName,Password)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Application Developer",0)
+Call ClickLinkWebIfCollapsed("Oracle Applications Home Page","Application",0)
+Call ClickLinkWeb("Oracle Applications Home Page","Messages",0)
+Call waitUntilFormExist("Message.*")
+
+pdh_message = 2
+pdh_loop = 1
+   
+Call GetInputFromExcel(InputFilePath,"Message",pdh_message)  
+
+Do
+	
+	If Ucase(action) = "ADD" Then
+		
+		Call SetFocusTable("Messages","FND_NEW_MESSAGES",0,pdh_loop,"Name")
+
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_loop,"Name",Name_1)
+
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_loop,"Language",Language_1)
+
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_loop,"Application",Application_1)
+
+		'Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_message,"Number",Number)
+
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",1,"Type",Type_1)
+
+		'Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_message,"Maximum Length",Maximum_Length)
+
+		'Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_message,"Alert Category",)
+
+		'Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_message,Alert Severity)
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",1,"Log Severity",Log_Severity)
+
+		call EnterTextForm("Messages","Current Message Text",0,Current_Message_Text)
+		call SelectMenu("Messages","File->Save")
+		call SelectMenu("Messages","File->New")
+
+		'pdh_message= pdh_message + 1
+		'pdh_loop= pdh_loop + 1
+		'Call GetInputFromExcel(InputFilePath,"Message",pdh_message+1)
+
+		if Name_1 <> "" then
+			wait 1
+		else
+			exit do
+		end if
+
+	ElseIf Ucase(action) = "CHANGE" Then
+	
+		Call SelectMenu("Messages","View->Query By Example->Enter")
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_loop,"Name",Name_1)
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_loop,"Application",Application_1)
+		Call SelectMenu("Messages","View->Query By Example->Run")
+		call EnterTextForm("Messages","Current Message Text",0,Current_Message_Text)
+		call SelectMenu("Messages","File->Save")
+		'Call GetInputFromExcel(InputFilePath,"Message",pdh_message+1)
+		
+	
+	ElseIf Ucase(action) = "DELETE" Then	
+		
+		Call SelectMenu("Messages","View->Query By Example->Enter")
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_loop,"Name",Name_1)
+		Call EnterTextTable("Messages","FND_NEW_MESSAGES",pdh_loop,"Application",Application_1)
+		Call SelectMenu("Messages","View->Query By Example->Run")
+		Call SelectMenu("Messages","Edit->Delete")
+		'Call GetInputFromExcel(InputFilePath,"Message",pdh_message+1)
+
+	End if
+	
+	pdh_loop= pdh_loop + 1
+	Call GetInputFromExcel(InputFilePath,"Message",pdh_message+1)	
+	 
+loop while Name_1 <> ""
+
+
+Call CloseForm("Messages")
+
+Call SelectMenu ("Navigator","File->Exit Oracle Applications")
+Call ClickNotificationButton ("Caution","OK")
+Call CloseBrowser ("Oracle Applications R12*")
+Call ClickLinkWeb ("Oracle Applications Home Page","Logout","0")
+wait 5
+Call CloseBrowser ("Login.*")
+Call FinalStatus()
+
+Call ResultZipFile_Upload (gstrScenarioResultFolder)
+Call RemoveUserEnvironmentVariable ("e_Swift_SingleReportFolderPath")
